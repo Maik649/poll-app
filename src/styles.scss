@@ -1,1 +1,6 @@
-/* You can add global styles to this file, and also import other style files */
+@use "./scss/varieable" as *;
+
+body{
+    margin: 0;
+    background-color: $primary-bg;
+}
