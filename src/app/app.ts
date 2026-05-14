@@ -5,7 +5,7 @@ import { HeroSecton } from './shared/components/hero-secton/hero-secton';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, HeroSecton],
+  imports: [RouterOutlet, Header],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
