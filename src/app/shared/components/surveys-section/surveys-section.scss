@@ -1,0 +1,17 @@
+@use "../../../../scss/varieable" as *;
+
+h1{
+    text-align: center;
+    width: 100%;
+}
+
+.subheadline{
+    font-size: 32px;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.--colomn-container{
+    display: flex;
+    flex-direction: column;
+}

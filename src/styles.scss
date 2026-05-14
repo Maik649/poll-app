@@ -4,3 +4,10 @@ body{
     margin: 0;
     background-color: $primary-bg;
 }
+
+h1{
+    font-family: $fontFamily_Nerko;
+    line-break: loose;
+    font-size: 100px;
+    color: $primary-orange;
+}
