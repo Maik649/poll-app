@@ -1,0 +1,34 @@
+
+@use 'fonts.scss';
+$primary-bg: rgb(53, 39, 58);
+$primary-orange: rgb(255, 183, 112);
+$secendary-orange: rgb(255, 207, 161);
+$bg-card: rgb(250, 245, 254);
+$content-limit: 1440px;
+
+$fontFamily_Nerko: 'NerkoOne-Regular';
+$fontFamily_Mulish: 'Mulish-Black';
+$fontFamily_Nokora-Bold: 'Nokora-Bold';
+
+
+.--primary-btn{
+    padding: 12px 16px;
+    background-color: $secendary-orange;
+    border-radius: 8px;
+    font-family: $fontFamily_Nokora-Bold;
+    font-weight: 700;
+    font-style: bold;
+    font-size: 18px;
+    
+    &:hover{
+        padding: 12px 25px;
+    }
+    
+}
+
+.content-wrapper{
+    display: flex;
+    margin: 0 auto;
+    align-items: center;
+    max-width: $content-limit;
+}
