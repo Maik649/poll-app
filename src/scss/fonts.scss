@@ -1,25 +1,135 @@
 @font-face {
-   font-family:'NerkoOne-Regular';
+   font-family: 'Nerko One';
    font-style: normal;
    font-weight: 400;
-   src: local('NerkoOne-Regular'), local('NerkoOne-Regular.ttf'),
-   url(/fonts/NerkoOne-Regular.ttf) format('truetype'),
+   font-display: swap;
+   src: url('/fonts/NerkoOne-Regular.ttf') format('truetype');
 }
 
-
 @font-face {
-   font-family:'Mulish-Black';
+   font-family: 'Nokora';
    font-style: normal;
    font-weight: 400;
-   src: local('Mulish-Black'), local('Mulish-Black.ttf'),
-   url(/fonts/Mulish-Black.ttf) format('truetype'),
+   font-display: swap;
+   src: url('/fonts/Nokora-Regular.ttf') format('truetype');
 }
 
+@font-face {
+   font-family: 'Nokora';
+   font-style: normal;
+   font-weight: 700;
+   font-display: swap;
+   src: url('/fonts/Nokora-Bold.ttf') format('truetype');
+}
 
 @font-face {
-   font-family:'Nokora-Bold.ttf';
+   font-family: 'Mulish';
+   font-style: normal;
+   font-weight: 200;
+   font-display: swap;
+   src: url('/fonts/Mulish-ExtraLight.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: italic;
+   font-weight: 200;
+   font-display: swap;
+   src: url('/fonts/Mulish-ExtraLightItalic.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: normal;
+   font-weight: 300;
+   font-display: swap;
+   src: url('/fonts/Mulish-Light.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: italic;
+   font-weight: 300;
+   font-display: swap;
+   src: url('/fonts/Mulish-LightItalic.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
    font-style: normal;
    font-weight: 400;
-   src: local('Nokora-Bold.ttf'), local('Nokora-Bold.ttf'),
-   url(/fonts/Nokora-Bold.ttf) format('truetype'),
+   font-display: swap;
+   src: url('/fonts/Mulish-Regular.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: italic;
+   font-weight: 400;
+   font-display: swap;
+   src: url('/fonts/Mulish-Italic.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: normal;
+   font-weight: 600;
+   font-display: swap;
+   src: url('/fonts/Mulish-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: italic;
+   font-weight: 600;
+   font-display: swap;
+   src: url('/fonts/Mulish-SemiBoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: normal;
+   font-weight: 700;
+   font-display: swap;
+   src: url('/fonts/Mulish-Bold.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: italic;
+   font-weight: 700;
+   font-display: swap;
+   src: url('/fonts/Mulish-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: normal;
+   font-weight: 800;
+   font-display: swap;
+   src: url('/fonts/Mulish-ExtraBold.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: italic;
+   font-weight: 800;
+   font-display: swap;
+   src: url('/fonts/Mulish-ExtraBoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: normal;
+   font-weight: 900;
+   font-display: swap;
+   src: url('/fonts/Mulish-Black.ttf') format('truetype');
+}
+
+@font-face {
+   font-family: 'Mulish';
+   font-style: italic;
+   font-weight: 900;
+   font-display: swap;
+   src: url('/fonts/Mulish-BlackItalic.ttf') format('truetype');
 }

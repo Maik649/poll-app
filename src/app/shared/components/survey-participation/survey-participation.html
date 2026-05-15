@@ -1,0 +1,69 @@
+<section class="participation content-wrapper --colomn-container">
+  <a routerLink="/" class="back-link">Zurueck zur Uebersicht</a>
+
+  <p class="status-message" *ngIf="isLoading">Umfrage wird geladen...</p>
+  <p class="status-message status-message--error" *ngIf="!isLoading && loadError">{{ loadError }}</p>
+
+  <div class="participation__layout" *ngIf="!isLoading && survey">
+    <section class="participation__shell">
+      <header class="participation__header">
+        <div class="meta-left">
+          <span class="pill">Published</span>
+          <span class="meta-text">Ends on {{ formatDate(survey.endDate) }}</span>
+          <span class="meta-text">Category: {{ survey.category }}</span>
+        </div>
+        <h1>{{ survey.askName }}</h1>
+        <p class="intro-text">
+          We want to create team activities that everyone will enjoy – share your preferences and ideas in our survey
+          to help us plan better experiences together.
+        </p>
+      </header>
+
+      <form [formGroup]="surveyForm" (ngSubmit)="submitSurvey()" class="participation__form">
+        <div class="questions-grid">
+          <article class="question-card" *ngFor="let question of survey.ask; let qi = index">
+            <h2>{{ qi + 1 }}. {{ question.questionText }}</h2>
+            <p class="question-hint">More than one answers are possible.</p>
+
+            <div class="answers">
+              <label class="answer-row" *ngFor="let answer of question.answers; let ai = index">
+                <input
+                  type="checkbox"
+                  [disabled]="isSubmitting || submitSuccess"
+                  [checked]="isAnswerChecked(qi, answer.id ?? answer.text)"
+                  (change)="toggleAnswer(qi, answer.id ?? answer.text, $any($event.target).checked)"
+                />
+                <span>{{ answerLabel(ai) }}. {{ answer.text }}</span>
+              </label>
+            </div>
+
+            <p class="error-message" *ngIf="questionHasError(qi)">Bitte waehle mindestens eine Antwort.</p>
+          </article>
+        </div>
+
+        <div class="submit-row">
+          <button class="--primary-btn" type="submit" [disabled]="isSubmitting || submitSuccess">Complete survey</button>
+        </div>
+
+        <p class="status-message status-message--error" *ngIf="submitError">{{ submitError }}</p>
+        <p class="success-message" *ngIf="submitSuccess">Danke! Deine Antworten wurden erfasst.</p>
+      </form>
+    </section>
+
+    <section class="results-panel" aria-label="Survey results">
+      <h2 class="results-title">Survey results <span>LIVE</span></h2>
+
+      <div class="result-question" *ngFor="let question of survey.ask; let qi = index">
+        <h3>{{ qi + 1 }}. {{ question.questionText }}</h3>
+
+        <div class="result-row" *ngFor="let answer of question.answers; let ai = index">
+          <span class="result-label">{{ answerLabel(ai) }}</span>
+          <div class="result-bar-track">
+            <div class="result-bar-fill" [style.width.%]="resultPercent(question.id, answer.id)"></div>
+          </div>
+          <span class="result-value">{{ resultPercent(question.id, answer.id) }}%</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>

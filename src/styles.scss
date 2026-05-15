@@ -5,6 +5,10 @@ body{
     background-color: $primary-bg;
 }
 
+body.survey-page {
+    background-color: #fff;
+}
+
 h1{
     font-family: $fontFamily_Nerko;
     line-break: loose;

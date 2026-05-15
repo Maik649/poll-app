@@ -1,7 +1,21 @@
 @use "../../../../scss/varieable" as *;
 
+.content-wrapper {
+    width: 100%;
+    justify-content: space-between;
+}
+
 .header-logo-content{
+    cursor: pointer;
+
     img{
         padding: 15px;
     }
+}
+
+.header-create-btn {
+    text-decoration: none;
+    color: $fonts-color-primary;
+    border: 0;
+    margin-right: 12px;
 }

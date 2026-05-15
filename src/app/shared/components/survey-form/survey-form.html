@@ -1,0 +1,213 @@
+<div class="form-wrapper">
+  <form class="creator-shell" [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
+    <span class="draft-badge">Draft</span>
+
+    <div class="creator-head">
+      <div>
+        <h1>Create new survey</h1>
+        <p>Baue Fragen, Antworten und optionale Details an einem Ort.</p>
+      </div>
+
+      <button class="cancel-btn" type="button" (click)="navigateBack()" [disabled]="isSaving">
+        Cancel
+      </button>
+    </div>
+
+    <div class="submit-error" *ngIf="submitError">{{ submitError }}</div>
+
+    <section class="editor-card">
+      <div class="meta-grid">
+        <div class="meta-column meta-column--left">
+          <div class="form-group">
+            <label for="askName">Survey name</label>
+            <div class="input-with-icon">
+              <input
+                id="askName"
+                type="text"
+                formControlName="askName"
+                placeholder="z.B. Team Lunch Abstimmung"
+                [class.invalid]="surveyForm.get('askName')?.invalid && surveyForm.get('askName')?.touched"
+              />
+              <button
+                class="clear-btn"
+                type="button"
+                (click)="clearControl('askName')"
+                *ngIf="hasControlValue('askName')"
+                [disabled]="isSaving"
+                aria-label="Survey name leeren"
+              >
+              <img src="icon/Delete.svg" alt="">
+            </button>
+            </div>
+            <span class="error-msg" *ngIf="surveyForm.get('askName')?.invalid && surveyForm.get('askName')?.touched">
+              Bitte einen Titel eingeben.
+            </span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="endDate">Set end date (optional)</label>
+              <div class="input-with-icon">
+                <input id="endDate" type="date" formControlName="endDate" />
+                <button
+                  class="clear-btn"
+                  type="button"
+                  (click)="clearControl('endDate')"
+                  *ngIf="hasControlValue('endDate')"
+                  [disabled]="isSaving"
+                  aria-label="End date leeren"
+                >
+                <img src="icon/Delete.svg" alt="">
+              </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="category">Choose category</label>
+              <div class="input-with-icon">
+                <select id="category" formControlName="category">
+                  <option value="">Select category</option>
+                  <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+                </select>
+                <button
+                  class="clear-btn"
+                  type="button"
+                  (click)="clearControl('category')"
+                  *ngIf="hasControlValue('category')"
+                  [disabled]="isSaving"
+                  aria-label="Kategorie leeren"
+                >
+                  <img src="icon/Delete.svg" alt="">
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group meta-column">
+          <label for="description">Describing text (optional)</label>
+          <div class="input-with-icon input-with-icon--textarea">
+            <textarea
+              id="description"
+              formControlName="description"
+              rows="5"
+              placeholder="Kurz beschreiben, worum es in deiner Umfrage geht..."
+            ></textarea>
+            <button
+              class="clear-btn"
+              type="button"
+              (click)="clearControl('description')"
+              *ngIf="hasControlValue('description')"
+              [disabled]="isSaving"
+              aria-label="Beschreibung leeren"
+            >
+              <img src="icon/Delete.svg" alt="">
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="questions-layout" formArrayName="ask">
+        <div class="questions-list">
+          <div
+            class="question-card"
+            *ngFor="let question of askArray.controls; let qi = index"
+            [formGroupName]="qi"
+          >
+            <div class="question-header">
+              <span class="question-number">{{ qi + 1 }}. Question</span>
+              <button
+                class="icon-btn"
+                type="button"
+                (click)="removeQuestion(qi)"
+                [disabled]="askArray.length === 1 || isSaving"
+              >
+                Remove
+              </button>
+            </div>
+
+            <div class="form-group form-group--tight">
+              <div class="input-with-icon">
+                <input
+                  type="text"
+                  formControlName="questionText"
+                  placeholder="Which date would work best for you?"
+                  [class.invalid]="question.get('questionText')?.invalid && question.get('questionText')?.touched"
+                />
+                <button
+                  class="clear-btn"
+                  type="button"
+                  (click)="clearQuestionText(qi)"
+                  *ngIf="hasQuestionText(qi)"
+                  [disabled]="isSaving"
+                  aria-label="Fragetext leeren"
+                >
+                  <img src="icon/Delete.svg" alt="">
+                </button>
+              </div>
+              <span class="error-msg" *ngIf="question.get('questionText')?.invalid && question.get('questionText')?.touched">
+                Bitte einen Fragetext eingeben.
+              </span>
+            </div>
+
+            <div class="question-options">
+              <span class="answers-title">Answers</span>
+              <label class="toggle-option">
+                <input type="checkbox" formControlName="allowMultipleAnswers" />
+                <span>Allow multiple answers.</span>
+              </label>
+            </div>
+
+            <div class="answers-section" formArrayName="answers">
+              <div class="answer-row" *ngFor="let answer of answersArray(qi).controls; let ai = index">
+                <span class="answer-prefix">{{ answerLabel(ai) }}.</span>
+                <div class="input-with-icon">
+                  <input
+                    type="text"
+                    [formControl]="getAnswerControl(qi, ai)"
+                    [placeholder]="'Answer ' + answerLabel(ai)"
+                    [class.invalid]="answer.invalid && answer.touched"
+                  />
+                  <button
+                    class="clear-btn"
+                    type="button"
+                    (click)="clearAnswerValue(qi, ai)"
+                    *ngIf="hasAnswerValue(qi, ai)"
+                    [disabled]="isSaving"
+                    [attr.aria-label]="'Antwort ' + answerLabel(ai) + ' leeren'"
+                  >
+                    <img src="icon/Delete.svg" alt="">
+                  </button>
+                </div>
+                <button
+                  class="icon-btn icon-btn--small"
+                  type="button"
+                  (click)="removeAnswer(qi, ai)"
+                  [disabled]="answersArray(qi).length === 1 || isSaving"
+                >
+                  x
+                </button>
+              </div>
+
+              <button class="text-link-btn" type="button" (click)="addAnswer(qi)" [disabled]="isSaving">
+                Add answer +
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="question-sidebar">
+          <button class="add-question-btn" type="button" (click)="addQuestion()" [disabled]="isSaving">
+            Add next question +
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="form-actions">
+      <button class="publish-btn" type="submit" [disabled]="surveyForm.invalid || isSaving">
+        {{ isSaving ? 'Saving...' : 'Publish' }}
+      </button>
+    </div>
+  </form>
+</div>

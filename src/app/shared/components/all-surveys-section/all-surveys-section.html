@@ -1,0 +1,58 @@
+<section class="all-surveys content-wrapper --colomn-container">
+  <div class="all-surveys__toolbar">
+    <div class="all-surveys__status-tabs" role="tablist" aria-label="Survey status filter">
+      <button
+        type="button"
+        class="status-tab"
+        [class.status-tab--active]="statusFilter === 'all'"
+        (click)="setStatusFilter('all')"
+      >
+        All survey
+      </button>
+      <button
+        type="button"
+        class="status-tab"
+        [class.status-tab--active]="statusFilter === 'active'"
+        (click)="setStatusFilter('active')"
+      >
+        Active survey
+      </button>
+      <button
+        type="button"
+        class="status-tab"
+        [class.status-tab--active]="statusFilter === 'past'"
+        (click)="setStatusFilter('past')"
+      >
+        Past survey
+      </button>
+    </div>
+
+    <div class="all-surveys__category-filter">
+      <label for="surveyCategory" class="category-label">Sort by categories</label>
+      <select
+        id="surveyCategory"
+        class="category-select"
+        [value]="selectedCategory"
+        (change)="updateCategory($any($event.target).value)"
+      >
+        <option value="all">All categories</option>
+        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+      </select>
+    </div>
+  </div>
+
+  <p class="status-message" *ngIf="isLoading">Umfragen werden geladen...</p>
+  <p class="status-message status-message--error" *ngIf="!isLoading && loadError">{{ loadError }}</p>
+
+  <p class="status-message" *ngIf="!isLoading && !loadError && filteredSurveys.length === 0">
+    Keine Umfragen fuer diesen Filter gefunden.
+  </p>
+
+  <div class="all-surveys__grid" *ngIf="!isLoading && !loadError && filteredSurveys.length > 0">
+    <a class="survey-card" *ngFor="let survey of filteredSurveys" [routerLink]="['/umfrage', survey.id]">
+      <p class="survey-card__category">{{ survey.category }}</p>
+      <h3 class="survey-card__title">{{ survey.askName }}</h3>
+      <span class="end-date">{{ daysUntilEnd(survey.endDate) }}</span>
+    </a>
+  </div>
+</section>

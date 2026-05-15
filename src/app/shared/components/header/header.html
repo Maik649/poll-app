@@ -1,8 +1,10 @@
 <header>
     <section class="content-wrapper">
 
-        <div class="header-logo-content">
-            <img src="./logo-orange.svg" alt="">
+        <div class="header-logo-content" routerLink="/">
+            <img src="./logo-orange.svg" alt="Poll App logo">
         </div>
+
+        <a class="--primary-btn header-create-btn" routerLink="/umfrage-erstellen" *ngIf="showCreateSurveyButton">Create survey</a>
     </section>
 </header>

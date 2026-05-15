@@ -1,0 +1,129 @@
+@use '../../../../scss/varieable' as *;
+
+.all-surveys {
+  flex-direction: column;  
+  padding: 0 0 48px;
+}
+
+.all-surveys__toolbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.all-surveys__status-tabs {
+  display: inline-flex;
+  gap: 10px;
+}
+
+.status-tab {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-family: $fontFamily_Mulish;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: $fonts-color-primary;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.status-tab--active {
+  background: $primary-orange;
+}
+
+.all-surveys__category-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-label {
+  font-family: $fontFamily_Mulish;
+  font-weight: 600;
+  color: #fff;
+}
+
+.category-select {
+  border-radius: 8px;
+  border: none;
+  padding: 8px 10px;
+  background: #fff;
+  color: $fonts-color-primary;
+  font-family: $fontFamily_Mulish;
+}
+
+.status-message {
+  margin: 12px 0;
+  font-size: 14px;
+  color: #fff;
+}
+
+.status-message--error {
+  color: #ffd8d8;
+}
+
+.all-surveys__grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 25px;
+}
+
+.survey-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px 50px 5px 5px;
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.survey-card__category {
+  margin: 0;
+  font-family: $fontFamily_Mulish;
+  font-size: 16px;
+  font-weight: 500;
+  color: $secendary-orange;
+}
+
+.survey-card__title {
+  margin: 0;
+  font-family: $fontFamily_Mulish;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.end-date {
+  margin-top: auto;
+  align-self: flex-end;
+  border-radius: 0 14px 0 0;
+  padding: 8px;
+  background-color: $secendary-orange;
+  color: $fonts-color-primary;
+  font-family: $fontFamily_Mulish;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .all-surveys__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .all-surveys__category-filter {
+    justify-content: space-between;
+  }
+
+  .all-surveys__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,247 @@
+@use '../../../../scss/varieable' as *;
+
+
+.participation {
+  flex-direction: column;
+  padding: 18px 0 40px;
+}
+
+.back-link {
+  width: 100%;
+  color: $fonts-color-primary;
+  font-family: $fontFamily_Mulish;
+  text-decoration: none;
+  margin-bottom: 14px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.participation__shell {
+  background: #ece9ef;
+  border-radius: 8px 120px 8px 8px;
+  padding: 26px 28px;
+}
+
+.participation__layout {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+.participation__header {
+  margin-bottom: 22px;
+}
+
+.meta-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.pill {
+  background: $primary-orange;
+  color: $fonts-color-primary;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: $fontFamily_Mulish;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.meta-text {
+  font-family: $fontFamily_Mulish;
+  color: $fonts-color-primary;
+  font-size: 16px;
+}
+
+h1 {
+  margin: 0;
+  font-family: $fontFamily_Nerko;
+  font-size: clamp(52px, 4.5vw, 72px);
+  line-height: 1.02;
+  color: $primary-orange;
+  max-width: 780px;
+}
+
+.intro-text {
+  margin: 10px 0 0;
+  max-width: 740px;
+  color: rgba(53, 39, 58, 0.9);
+  font-family: $fontFamily_Mulish;
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+.questions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+  row-gap: 18px;
+}
+
+.question-card {
+  padding: 0;
+}
+
+.question-card h2 {
+  margin: 0 0 2px;
+  font-family: $fontFamily_Mulish;
+  font-size: 36px;
+  line-height: 1.2;
+  color: $fonts-color-primary;
+}
+
+.question-hint {
+  margin: 0 0 10px;
+  font-family: $fontFamily_Mulish;
+  font-size: 14px;
+  color: rgba(53, 39, 58, 0.75);
+}
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.answer-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  font-family: $fontFamily_Mulish;
+  color: $fonts-color-primary;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.answer-row input {
+  margin-top: 3px;
+}
+
+.results-panel {
+  background: #ece9ef;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.results-title {
+  margin: 4px 0 18px;
+  font-family: $fontFamily_Nokora-Bold;
+  font-size: 44px;
+  line-height: 1.1;
+  color: $fonts-color-primary;
+}
+
+.results-title span {
+  color: $primary-orange;
+}
+
+.result-question {
+  margin-bottom: 16px;
+}
+
+.result-question h3 {
+  margin: 0 0 8px;
+  font-family: $fontFamily_Mulish;
+  font-size: 16px;
+  line-height: 1.2;
+  color: $fonts-color-primary;
+}
+
+.result-row {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.result-label {
+  font-family: $fontFamily_Mulish;
+  font-size: 13px;
+  font-weight: 600;
+  color: $fonts-color-primary;
+}
+
+.result-bar-track {
+  height: 10px;
+  background: rgba(53, 39, 58, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.result-bar-fill {
+  height: 100%;
+  background: $primary-orange;
+  border-radius: 999px;
+}
+
+.result-value {
+  font-family: $fontFamily_Mulish;
+  color: $primary-orange;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.submit-row {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-row .--primary-btn {
+  border: 0;
+  font-size: 16px;
+  border-radius: 10px;
+  padding: 10px 16px;
+}
+
+.error-message {
+  margin: 10px 0 0;
+  color: #b03030;
+  font-family: $fontFamily_Mulish;
+  font-size: 13px;
+}
+
+.success-message {
+  margin: 14px 0 0;
+  font-family: $fontFamily_Mulish;
+  font-weight: 700;
+  color: #1f6d32;
+}
+
+.status-message {
+  margin: 12px 0;
+  font-size: 14px;
+  color: #fff;
+}
+
+.status-message--error {
+  color: #ffd8d8;
+}
+
+@media (max-width: 900px) {
+  h1 {
+    font-size: 44px;
+  }
+
+  .participation__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .results-panel {
+    padding: 16px;
+  }
+
+  .questions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .question-card h2 {
+    font-size: 30px;
+  }
+}

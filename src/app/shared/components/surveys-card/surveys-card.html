@@ -1,1 +1,15 @@
-<p>surveys-card works!</p>
+<p class="status-message" *ngIf="isLoading">Umfragen werden geladen...</p>
+<p class="status-message status-message--error" *ngIf="!isLoading && loadError">{{ loadError }}</p>
+<p class="status-message" *ngIf="!isLoading && !loadError && surveys.length === 0">
+    Noch keine Umfragen vorhanden.
+</p>
+
+<a class="survey-card" *ngFor="let survey of topUrgentSurveys" [routerLink]="['/umfrage', survey.id]">
+    <div class="survey-card__header">
+        <p>{{survey.category}}</p>
+        <h2>{{ survey.askName }}</h2>
+        <div class="survey-card__dates">
+            <span class="end-date">{{ daysUntilEnd(survey.endDate) }}</span>
+        </div>
+    </div>
+</a>
