@@ -1,14 +1,20 @@
 @use "../../../../scss/varieable" as *;
+@use "../../../../scss/mixin.scss" as *;
 
 h1{
     text-align: center;
     width: 100%;
+    
 }
 
 .subheadline{
     font-size: 32px;
     font-weight: 500;
     font-style: normal;
+
+    @include respond-to('small') {
+        font-size: 20px;
+  }
 }
 
 .--colomn-container{
@@ -21,4 +27,9 @@ app-surveys-card{
     flex-direction: row;
     gap: 20px;
     padding: 40px 0;
+
+    @include respond-to('small') {
+    flex-direction: column;
+    padding: 40px;
+  }
 }

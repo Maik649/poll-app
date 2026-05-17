@@ -1,5 +1,11 @@
 @use '../../../../scss/varieable' as *;
 
+/** Stellt sicher dass das Custom Element immer die volle Breite des Eltern-Flex-Containers einnimmt. */
+:host {
+  display: block;
+  width: 90%;
+}
+
 .all-surveys {
   flex-direction: column;  
   padding: 0 0 48px;
@@ -36,24 +42,69 @@
 }
 
 .all-surveys__category-filter {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  position: relative;
+  min-width: 240px;
 }
 
-.category-label {
-  font-family: $fontFamily_Mulish;
-  font-weight: 600;
-  color: #fff;
-}
-
-.category-select {
-  border-radius: 8px;
+.category-dropdown-trigger {
+  width: 100%;
   border: none;
-  padding: 8px 10px;
-  background: #fff;
-  color: $fonts-color-primary;
+  border-radius: 8px;
+  background: #4e3d57;
+  color: #fff;
   font-family: $fontFamily_Mulish;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.category-dropdown-trigger--open .category-arrow {
+  transform: rotate(180deg);
+}
+
+.category-arrow {
+  color: $primary-orange;
+  font-size: 18px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.category-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 100;
+  padding-top: 6px;
+}
+
+.category-dropdown__inner {
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 0;
+  width: 250px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+.category-option {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: #3a2f41;
+  font-family: $fontFamily_Mulish;
+  font-size: 16px;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.category-option:hover,
+.category-option--active {
+  width: 100%;
+  background: rgba(78, 61, 87, 0.08);
 }
 
 .status-message {
@@ -83,6 +134,11 @@
   gap: 24px;
   text-decoration: none;
   cursor: pointer;
+}
+
+.survey-card--expired {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .survey-card__category {
@@ -120,7 +176,12 @@
   }
 
   .all-surveys__category-filter {
-    justify-content: space-between;
+    min-width: 100%;
+  }
+
+  .category-option,
+  .category-selected {
+    font-size: 16px;
   }
 
   .all-surveys__grid {

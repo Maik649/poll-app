@@ -7,9 +7,16 @@
 
 .header-logo-content{
     cursor: pointer;
+    display: flex;
+    align-items: center;
 
-    img{
+    .logo{
         padding: 15px;
+        display: block;
+    }
+
+    .logo--dark {
+        display: none;
     }
 }
 
@@ -18,4 +25,16 @@
     color: $fonts-color-primary;
     border: 0;
     margin-right: 12px;
+}
+
+:host-context(body.survey-page) {
+    .header-logo-content {
+        .logo--light {
+            display: none;
+        }
+
+        .logo--dark {
+            display: block;
+        }
+    }
 }

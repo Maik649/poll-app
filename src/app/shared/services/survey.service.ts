@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { Surveys } from '../components/surveys';
 
+/** Represents one answer row returned from the database. */
 interface DbSurveyAnswer {
   id: string;
   question_id: string;
@@ -10,6 +11,7 @@ interface DbSurveyAnswer {
   position: number;
 }
 
+/** Represents one question row returned from the database. */
 interface DbSurveyQuestion {
   id: string;
   survey_id: string;
@@ -17,6 +19,7 @@ interface DbSurveyQuestion {
   position: number;
 }
 
+/** Represents one survey row returned from the database. */
 interface DbSurvey {
   id: string;
   ask_name: string;
@@ -25,17 +28,20 @@ interface DbSurvey {
   category: string;
 }
 
+/** Represents one persisted survey vote row. */
 interface SurveyVoteRow {
   survey_id: string;
   question_id: string;
   answer_id: string;
 }
 
+/** Represents the selected answers for a single survey question. */
 export interface SurveySubmission {
   questionId: string;
   answerIds: string[];
 }
 
+/** Groups vote counts by answer and by question. */
 export interface SurveyVoteCounts {
   byAnswerId: Record<string, number>;
   byQuestionId: Record<string, number>;
@@ -44,6 +50,7 @@ export interface SurveyVoteCounts {
 @Injectable({
   providedIn: 'root',
 })
+/** Encapsulates survey persistence and live vote aggregation through Supabase. */
 export class SurveyService {
   private supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
     auth: {
@@ -57,6 +64,7 @@ export class SurveyService {
     this.validateConfig();
   }
 
+  /** Validates the runtime Supabase configuration before any request is sent. */
   private validateConfig(): void {
     const { supabaseUrl, supabaseAnonKey } = environment;
 
@@ -75,6 +83,7 @@ export class SurveyService {
     }
   }
 
+  /** Wraps an async operation with a timeout to avoid hanging UI requests. */
   private async withTimeout<T>(promise: PromiseLike<T>, label: string, timeoutMs = 10000): Promise<T> {
     let timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -93,6 +102,7 @@ export class SurveyService {
     }
   }
 
+  /** Creates a survey including its questions and answer options. */
   async createSurvey(survey: Surveys): Promise<void> {
     const { data: insertedSurvey, error: surveyError } = await this.supabase
       .from('surveys')
@@ -143,6 +153,7 @@ export class SurveyService {
     }
   }
 
+  /** Loads all surveys with nested questions and answer options. */
   async getSurveys(): Promise<Surveys[]> {
     const { data: surveysData, error: surveysError } = await this.withTimeout(
       this.supabase
@@ -230,6 +241,7 @@ export class SurveyService {
       };
     });
   }
+    /** Loads one survey by id including its nested questions and answers. */
 
   async getSurveyById(surveyId: string): Promise<Surveys | null> {
     const { data: surveyData, error: surveyError } = await this.withTimeout(
@@ -308,6 +320,7 @@ export class SurveyService {
     };
   }
 
+  /** Stores the selected answers for one survey submission. */
   async submitSurveyVote(surveyId: string, submission: SurveySubmission[]): Promise<void> {
     const rows: SurveyVoteRow[] = submission.flatMap((questionSubmission) =>
       questionSubmission.answerIds.map((answerId) => ({
@@ -331,6 +344,7 @@ export class SurveyService {
     }
   }
 
+  /** Aggregates persisted votes for the live result display of one survey. */
   async getSurveyVoteCounts(surveyId: string): Promise<SurveyVoteCounts> {
     const { data, error } = await this.withTimeout(
       this.supabase

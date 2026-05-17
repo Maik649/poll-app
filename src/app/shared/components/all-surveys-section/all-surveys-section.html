@@ -27,17 +27,41 @@
       </button>
     </div>
 
-    <div class="all-surveys__category-filter">
-      <label for="surveyCategory" class="category-label">Sort by categories</label>
-      <select
-        id="surveyCategory"
-        class="category-select"
-        [value]="selectedCategory"
-        (change)="updateCategory($any($event.target).value)"
+    <div class="all-surveys__category-filter" (mouseleave)="closeCategoryMenu()">
+      <button
+        type="button"
+        class="category-dropdown-trigger"
+        [class.category-dropdown-trigger--open]="isCategoryMenuOpen"
+        (click)="toggleCategoryMenu()"
+        aria-haspopup="listbox"
+        [attr.aria-expanded]="isCategoryMenuOpen"
       >
-        <option value="all">All categories</option>
-        <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
-      </select>
+        <span>{{ selectedCategory === 'all' ? 'Sort by categories' : selectedCategoryLabel }}</span>
+        <span class="category-arrow" aria-hidden="true">▾</span>
+      </button>
+
+      <div class="category-dropdown" *ngIf="isCategoryMenuOpen">
+        <div class="category-dropdown__inner">
+        <button
+          type="button"
+          class="category-option"
+          [class.category-option--active]="selectedCategory === 'all'"
+          (click)="updateCategory('all')"
+        >
+          All categories
+        </button>
+        <button
+          type="button"
+          class="category-option"
+          *ngFor="let category of categories"
+          [class.category-option--active]="selectedCategory === category"
+          (click)="updateCategory(category)"
+        >
+          {{ category }}
+        </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -49,10 +73,20 @@
   </p>
 
   <div class="all-surveys__grid" *ngIf="!isLoading && !loadError && filteredSurveys.length > 0">
-    <a class="survey-card" *ngFor="let survey of filteredSurveys" [routerLink]="['/umfrage', survey.id]">
-      <p class="survey-card__category">{{ survey.category }}</p>
-      <h3 class="survey-card__title">{{ survey.askName }}</h3>
-      <span class="end-date">{{ daysUntilEnd(survey.endDate) }}</span>
-    </a>
+    <ng-container *ngFor="let survey of filteredSurveys">
+      <a class="survey-card" *ngIf="!isSurveyExpired(survey.endDate); else expiredSurveyCard" [routerLink]="['/umfrage', survey.id]">
+        <p class="survey-card__category">{{ survey.category }}</p>
+        <h3 class="survey-card__title">{{ survey.askName }}</h3>
+        <span class="end-date">{{ daysUntilEnd(survey.endDate) }}</span>
+      </a>
+
+      <ng-template #expiredSurveyCard>
+        <article class="survey-card survey-card--expired" aria-disabled="true">
+          <p class="survey-card__category">{{ survey.category }}</p>
+          <h3 class="survey-card__title">{{ survey.askName }}</h3>
+          <span class="end-date">{{ daysUntilEnd(survey.endDate) }}</span>
+        </article>
+      </ng-template>
+    </ng-container>
   </div>
 </section>

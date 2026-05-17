@@ -9,6 +9,7 @@ import { HeroSecton } from './shared/components/hero-secton/hero-secton';
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
+/** Renders the application shell and exposes the app title signal. */
 export class App {
   protected readonly title = signal('poll-app');
 }

@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './header.html',
   styleUrl: './header.scss',
 })
+/** Displays the header and toggles actions based on the active route. */
 export class Header implements OnInit, OnDestroy {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
@@ -16,6 +17,7 @@ export class Header implements OnInit, OnDestroy {
 
   showCreateSurveyButton = false;
 
+  /** Subscribes to navigation changes and updates the header action state. */
   ngOnInit(): void {
     this.updateButtonVisibility(this.router.url);
 
@@ -26,10 +28,12 @@ export class Header implements OnInit, OnDestroy {
     });
   }
 
+  /** Releases the route subscription when the header is destroyed. */
   ngOnDestroy(): void {
     this.routeSubscription?.unsubscribe();
   }
 
+  /** Computes whether the create-survey shortcut should be visible. */
   private updateButtonVisibility(url: string): void {
     this.showCreateSurveyButton = url.startsWith('/umfrage/');
     this.cdr.detectChanges();

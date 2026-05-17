@@ -8,6 +8,7 @@ import { AllSurveysSection } from '../all-surveys-section/all-surveys-section';
   templateUrl: './surveys-section.html',
   styleUrl: './surveys-section.scss',
 })
+/** Combines the featured and complete survey lists on the landing page. */
 export class SurveysSection {
  
 }

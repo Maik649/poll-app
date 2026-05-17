@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { HeroSecton } from './shared/components/hero-secton/hero-secton';
-import { SurveyForm } from './shared/components/survey-form/survey-form';
 import { SurveyParticipation } from './shared/components/survey-participation/survey-participation';
 
+/** Defines the top-level routes for the poll application. */
 export const routes: Routes = [
     {
         path: '',
@@ -10,7 +10,7 @@ export const routes: Routes = [
     },
     {
         path: 'umfrage-erstellen',
-        component: SurveyForm,
+        component: HeroSecton,
     },
     {
         path: 'umfrage/:id',

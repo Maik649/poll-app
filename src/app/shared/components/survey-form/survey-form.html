@@ -39,7 +39,7 @@
               <img src="icon/Delete.svg" alt="">
             </button>
             </div>
-            <span class="error-msg" *ngIf="surveyForm.get('askName')?.invalid && surveyForm.get('askName')?.touched">
+            <span class="error-msg" [class.error-msg--visible]="surveyForm.get('askName')?.invalid && surveyForm.get('askName')?.touched">
               Bitte einen Titel eingeben.
             </span>
           </div>
@@ -48,7 +48,7 @@
             <div class="form-group">
               <label for="endDate">Set end date (optional)</label>
               <div class="input-with-icon">
-                <input id="endDate" type="date" formControlName="endDate" />
+                <input id="endDate" type="date" formControlName="endDate" [min]="minEndDate"/>
                 <button
                   class="clear-btn"
                   type="button"
@@ -63,10 +63,10 @@
             </div>
 
             <div class="form-group">
-              <label for="category">Choose category</label>
+              <!-- <label for="category">Choose category</label> -->
               <div class="input-with-icon">
                 <select id="category" formControlName="category">
-                  <option value="">Select category</option>
+                  <option value="">Choose category</option>
                   <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
                 </select>
                 <button
@@ -77,7 +77,7 @@
                   [disabled]="isSaving"
                   aria-label="Kategorie leeren"
                 >
-                  <img src="icon/Delete.svg" alt="">
+                  <img src="icon/Delete.svg" alt="Delete Icon">
                 </button>
               </div>
             </div>
@@ -145,7 +145,7 @@
                   <img src="icon/Delete.svg" alt="">
                 </button>
               </div>
-              <span class="error-msg" *ngIf="question.get('questionText')?.invalid && question.get('questionText')?.touched">
+              <span class="error-msg" [class.error-msg--visible]="question.get('questionText')?.invalid && question.get('questionText')?.touched">
                 Bitte einen Fragetext eingeben.
               </span>
             </div>

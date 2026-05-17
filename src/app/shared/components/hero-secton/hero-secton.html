@@ -1,6 +1,4 @@
 <section class="content-wrapper">
-
-    <!-- // Todo einzel Komponente -->
     <div class="content-left">
         <h1>Collect Feedback, Unlock Ideas</h1>
         <p class="subheadline">Create and share surveys in minutes – from team events to workplace culture. Collect opinions, engage your audience, and
@@ -9,8 +7,15 @@
     </div>
 
     <div class="content-reight">
-        <img src="./icon/handy-check.png" alt="">
+        <div class="img-wrapper">
+            <img src="./icon/handy-check.png" alt="">
+        </div>
     </div>
 
 </section>
 <app-surveys-section></app-surveys-section>
+<dialog class="create-survey-dialog" [open]="isCreateDialogOpen" (cancel)="onDialogCancel($event)">
+    <button class="dialog-close-btn" type="button" (click)="closeCreateDialog()" aria-label="Dialog schliessen">x</button>
+    <app-survey-form [isDialogMode]="true" (closed)="closeCreateDialog()" (saved)="closeCreateDialog()"></app-survey-form>
+</dialog>
+

@@ -1,8 +1,10 @@
 @use "./scss/varieable" as *;
+@use "./scss/mixin.scss" as *;
 
 body{
     margin: 0;
     background-color: $primary-bg;
+    scrollbar-gutter: stable;
 }
 
 body.survey-page {
@@ -14,4 +16,11 @@ h1{
     line-break: loose;
     font-size: 100px;
     color: $primary-orange;
+    @include respond-to('small') {
+        
+        font-size: 62px;
+        line-height: 50px;
+        font-weight: 400;
+  }
 }
+

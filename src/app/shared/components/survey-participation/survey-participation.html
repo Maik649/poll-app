@@ -1,6 +1,4 @@
 <section class="participation content-wrapper --colomn-container">
-  <a routerLink="/" class="back-link">Zurueck zur Uebersicht</a>
-
   <p class="status-message" *ngIf="isLoading">Umfrage wird geladen...</p>
   <p class="status-message status-message--error" *ngIf="!isLoading && loadError">{{ loadError }}</p>
 
@@ -37,12 +35,14 @@
               </label>
             </div>
 
-            <p class="error-message" *ngIf="questionHasError(qi)">Bitte waehle mindestens eine Antwort.</p>
+            <p class="error-message" *ngIf="questionHasError(qi)">Bitte wähle mindestens eine Antwort.</p>
           </article>
         </div>
 
         <div class="submit-row">
-          <button class="--primary-btn" type="submit" [disabled]="isSubmitting || submitSuccess">Complete survey</button>
+          <button class="--primary-btn" type="submit" [disabled]="surveyForm.invalid || isSubmitting || submitSuccess || !survey">
+            Complete survey
+          </button>
         </div>
 
         <p class="status-message status-message--error" *ngIf="submitError">{{ submitError }}</p>
