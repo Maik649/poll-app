@@ -3,13 +3,16 @@
 <p class="status-message" *ngIf="!isLoading && !loadError && topUrgentSurveys.length === 0">
     Keine aktiven Umfragen vorhanden.
 </p>
-
-<a class="survey-card" *ngFor="let survey of topUrgentSurveys" [routerLink]="['/umfrage', survey.id]">
-    <div class="survey-card__header">
-        <p>{{survey.category}}</p>
-        <h2>{{ survey.askName }}</h2>
-        <div class="survey-card__dates">
-            <span class="end-date">{{ daysUntilEnd(survey.endDate) }}</span>
+<p class="subheadline --text-left ">Ending soon surveys</p>
+<div class="survey-card-content">
+    <a class="survey-card" *ngFor="let survey of topUrgentSurveys" [routerLink]="['/umfrage', survey.id]">
+        <div class="survey-card__header">
+            <p>{{survey.category}}</p>
+            <h2>{{ survey.askName }}</h2>
+            <div class="survey-card__dates">
+                <span class="end-date">{{ daysUntilEnd(survey.endDate) }}</span>
+            </div>
         </div>
-    </div>
-</a>
+    </a>
+
+</div>

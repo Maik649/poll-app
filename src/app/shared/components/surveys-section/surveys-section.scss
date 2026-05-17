@@ -4,6 +4,10 @@
 h1{
     text-align: center;
     width: 100%;
+
+    @include respond-to('small') {
+        text-align: left;
+    }
     
 }
 
@@ -24,12 +28,14 @@ h1{
 
 app-surveys-card{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 20px;
     padding: 40px 0;
+    width: 90%;
 
     @include respond-to('small') {
-    flex-direction: column;
-    padding: 40px;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px 0;
   }
 }

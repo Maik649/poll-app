@@ -1,4 +1,4 @@
-@use '../../../../scss/varieable.scss' as *;
+@use '../../../../scss/varieable.scss'as *;
 
 .form-wrapper {
   padding: 24px;
@@ -50,23 +50,6 @@
   }
 }
 
-.cancel-btn,
-.publish-btn,
-.add-question-btn {
-  border: 0;
-  border-radius: 14px;
-  font-family: $fontFamily_Nokora-Bold;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.cancel-btn {
-  min-width: 112px;
-  padding: 12px 18px;
-  background: #8f685a;
-  color: #fff;
-}
-
 .editor-card {
   padding: 32px;
   border-radius: 34px 34px 14px 14px;
@@ -103,8 +86,8 @@
     font-weight: 700;
     color: #fff;
   }
-  
-  select{
+
+  select {
     width: 100%;
     padding: 12px 14px;
     border: 2px solid transparent;
@@ -135,7 +118,6 @@
     border-radius: 5px 20px 5px 5px;
     background: #fff;
     color: #37263f;
-    
     font-size: 15px;
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -163,50 +145,20 @@
   column-gap: 35px;
 }
 
-.input-with-icon--textarea .clear-btn {
-  align-self: start;
-  margin-top: 10px;
-}
-
-.clear-btn {
-  position: static;
-  width: 28px;
-  height: 28px;
-  border: none;
-  border-radius: 6px;
-  padding: 0;
-  background-color: transparent;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  img {
-    width: 25px;
-    height: 25px;
-    display: block;
-    opacity: 1;
-  }
-
-  &:hover {
-    background: rgba(45, 31, 52, 1);
-  }
-}
-
 .form-group--tight {
   gap: 6px;
 }
 
 .error-msg,
 .submit-error {
- display: block;
+  display: block;
   min-height: 16px;
   /* Platz bleibt immer reserviert, auch ohne sichtbaren Fehlertext. */
   visibility: hidden;
   /* Unsichtbar, aber layout-stabil, damit nichts springt. */
   color: #ffc5c5;
   font-size: 13px;
-  
+
 }
 
 .error-msg--visible {
@@ -286,7 +238,7 @@
   gap: 10px;
   margin-bottom: 10px;
 
-  > .input-with-icon {
+  >.input-with-icon {
     flex: 1;
   }
 
@@ -301,66 +253,16 @@
   min-width: 24px;
 }
 
-.icon-btn,
-.text-link-btn {
-  background: transparent;
-  color: #fff;
-}
-
-.icon-btn {
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 8px 12px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.icon-btn--small {
-  min-width: 42px;
-  padding: 8px 10px;
-}
-
-.text-link-btn {
-  margin-top: 10px;
-  padding: 0;
-  border: 0;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
 .question-sidebar {
   display: flex;
   justify-content: center;
   padding-top: 30px;
 }
 
-.add-question-btn {
-  padding: 14px 18px;
-  background: #8f685a;
-  color: #fff;
-}
-
 .form-actions {
   display: flex;
   justify-content: flex-end;
   margin-top: 24px;
-}
-
-.publish-btn {
-  min-width: 124px;
-  padding: 14px 18px;
-  background: #ffd39a;
-  color: #2f2233;
-}
-
-.cancel-btn:disabled,
-.publish-btn:disabled,
-.add-question-btn:disabled,
-.icon-btn:disabled,
-.text-link-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
 }
 
 @media (max-width: 980px) {

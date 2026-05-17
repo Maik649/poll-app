@@ -1,68 +1,100 @@
-@use "../../../../scss/varieable" as *;
-@use "../../../../scss/mixin.scss" as *;
+@use "../../../../scss/varieable"as *;
+@use "../../../../scss/mixin.scss"as *;
+
+.survey-card-content {
+  display: flex;
+  gap: 10px;
+}
 
 .status-message {
-	margin: 12px 0;
-	font-size: 14px;
-	color: #fff;
+  margin: 12px 0;
+  font-size: 14px;
+  color: #fff;
 }
 
 .status-message--error {
-	color: #ffd8d8;
+  color: #ffd8d8;
 }
 
 .survey-card {
-	display: flex;
-	width: 100%;
-	background: rgb(250, 245, 254);
-	border-radius: 0 80px 0 0;
-	padding: 40px 18px;
-	margin-bottom: 12px;
-	gap: 50px;
-	height: auto;
-	text-decoration: none;
-	cursor: pointer;
-	&:hover{
-		background: rgb(244, 233, 251);
-	}
+  display: flex;
+  width: 100%;
+  background: rgb(250, 245, 254);
+  border-radius: 0 80px 0 0;
+  padding: 40px 18px;
+  margin-bottom: 12px;
+  gap: 50px;
+  height: auto;
+  text-decoration: none;
+  cursor: pointer;
 
-	
+  &:hover {
+    background: rgb(244, 233, 251);
+  }
+
+
 }
 
 .survey-card__header {
-	display: flex;
-	justify-content: space-between;
-	flex-direction: column;
-	gap: 50px;
-	align-items: flex-start;
-	line-break: anywhere;
-	p{
-		font-family: $fontFamily_Mulish;
-		font-size: 14px;	
-	}
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  gap: 50px;
+  align-items: flex-start;
+  line-break: anywhere;
+
+  p {
+    font-family: $fontFamily_Mulish;
+    font-size: 14px;
+  }
 }
 
 .survey-card__header h2 {
-	margin: 0;
-	font-family: $fontFamily_Mulish;
-	font-size: 26px;
-	font-weight: 700;
-	font-style: bold;
-	color: $fonts-color-primary;
+  margin: 0;
+  font-family: $fontFamily_Mulish;
+  font-size: 26px;
+  font-weight: 700;
+  font-style: bold;
+  color: $fonts-color-primary;
 }
 
 .survey-card__dates {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	font-size: 13px;
-	color: $fonts-color-primary;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: $fonts-color-primary;
 }
 
-.end-date{
-	border-radius: 0 14px 0 0;
-	padding: 8px;
-	background-color: $secendary-orange;
-	color:$fonts-color-primary;
+.end-date {
+  border-radius: 0 14px 0 0;
+  padding: 8px;
+  background-color: $secendary-orange;
+  color: $fonts-color-primary;
 }
 
+@include respond-to('small') {
+ .survey-card-content {
+   flex-direction: column;
+ }
+
+  .survey-card {
+    border-radius: 0 46px 0 0;
+    padding: 18px 14px;
+    gap: 18px;
+  }
+
+  .survey-card__header {
+    gap: 14px;
+
+    h2 {
+      font-size: 21px;
+      line-height: 1.2;
+    }
+  }
+
+  .end-date {
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+}

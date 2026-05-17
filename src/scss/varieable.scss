@@ -14,34 +14,6 @@ $fontFamily_Mulish: 'Mulish', sans-serif;
 $fontFamily_Nokora-Bold: 'Nokora', sans-serif;
 $fonts-color-primary: rgba(53, 39, 58, 1);
 
-.--primary-btn{
-    position: relative;
-    padding: 12px 16px 12px 16px;
-    background-color: $secendary-orange;
-    border-radius: 8px;
-    font-family: $fontFamily_Nokora-Bold;
-    font-weight: 700;
-    font-style: bold;
-    font-size: 18px;
-    transition: all 0.4s;
-    
-    &:hover{
-        padding: 12px 40px 12px 16px;
-        transition: all 0.2s;
-        background-color: $primary-orange;
-
-         &::after{
-            position: absolute;
-            content: '';
-            top: 16px;
-            right: 10px;
-            opacity: 0.9;
-            width: 18px;
-            height: 18px;
-            background: url('/icon/add_circle.svg') center / contain no-repeat;
-        }
-    }
-}
 
 .--text-left{
     text-align: left;

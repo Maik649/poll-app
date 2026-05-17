@@ -1,4 +1,5 @@
 @use '../../../../scss/varieable' as *;
+@use '../../../../scss/mixin.scss' as *;
 
 /** Stellt sicher dass das Custom Element immer die volle Breite des Eltern-Flex-Containers einnimmt. */
 :host {
@@ -122,7 +123,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
-  padding: 25px;
+  padding: 18px 0;
 }
 
 .survey-card {
@@ -169,10 +170,30 @@
   font-size: 14px;
 }
 
-@media (max-width: 900px) {
+@include respond-to('small') {
+  .all-surveys {
+    padding-bottom: 28px;
+  }
+
   .all-surveys__toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .all-surveys__status-tabs {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .status-tab {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 13px;
+    text-align: center;
   }
 
   .all-surveys__category-filter {
@@ -186,5 +207,27 @@
 
   .all-surveys__grid {
     grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px 0;
+  }
+
+  .survey-card {
+    border-radius: 5px 28px 5px 5px;
+    padding: 10px 14px;
+    gap: 12px;
+  }
+
+  .survey-card__category {
+    font-size: 12px;
+  }
+
+  .survey-card__title {
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .end-date {
+    padding: 6px;
+    font-size: 11px;
   }
 }

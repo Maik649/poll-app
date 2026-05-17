@@ -9,6 +9,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    width: 100%;
 
     .logo{
         padding: 15px;
@@ -18,13 +19,6 @@
     .logo--dark {
         display: none;
     }
-}
-
-.header-create-btn {
-    text-decoration: none;
-    color: $fonts-color-primary;
-    border: 0;
-    margin-right: 12px;
 }
 
 :host-context(body.survey-page) {

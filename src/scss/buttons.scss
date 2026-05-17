@@ -1,0 +1,206 @@
+@use './varieable.scss'as *;
+
+.header-create-btn[_ngcontent-ng-c92282519] {
+  text-decoration: none;
+  color: rgb(53, 39, 58);
+  border: 0;
+  margin-right: 12px;
+  width: 140px;
+}
+
+.--primary-btn {
+  position: relative;
+  padding: 12px 16px 12px 16px;
+  background-color: $secendary-orange;
+  border: 0;
+  border-radius: 8px;
+  font-family: $fontFamily_Nokora-Bold;
+  font-weight: 700;
+  font-style: bold;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.4s;
+
+  &::after {
+    position: absolute;
+    content: '';
+    top: 16px;
+    right: 10px;
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    transform: translateX(-6px) scale(0.92);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    background: url('/icon/add_circle.svg') center / contain no-repeat;
+  }
+
+  &:hover {
+    padding: 12px 40px 12px 16px;
+    transition: all 0.2s;
+    background-color: $primary-orange;
+
+    &::after {
+      opacity: 0.9;
+      transform: translateX(0) scale(1);
+    }
+  }
+}
+
+
+.cancel-btn,
+.add-question-btn {
+  border: 0;
+  border-radius: 14px;
+  font-family: $fontFamily_Nokora-Bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.publish-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 124px;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: 14px;
+  font-family: $fontFamily_Nokora-Bold;
+  font-size: 15px;
+  cursor: pointer;
+  background: #ffd39a;
+  color: #2f2233;
+
+  &::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    margin-left: 8px;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    background: url('/icon/check-dark.svg') center / contain no-repeat;
+  }
+
+  &:not(:disabled) {
+    padding: 14px 25px;
+
+    &::after {
+      opacity: 0.9;
+      transform: translateX(0);
+    }
+  }
+
+  &:disabled::after {
+    opacity: 0;
+    transform: translateX(-4px);
+  }
+}
+
+.cancel-btn {
+  min-width: 112px;
+  padding: 12px 18px;
+  background: #8f685a;
+  color: #fff;
+}
+
+.input-with-icon--textarea .clear-btn {
+  align-self: start;
+  margin-top: 10px;
+}
+
+.clear-btn {
+  position: static;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  padding: 0;
+  background-color: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 25px;
+    height: 25px;
+    display: block;
+    opacity: 1;
+  }
+
+  &:hover {
+    background: rgba(45, 31, 52, 1);
+  }
+}
+
+.icon-btn,
+.text-link-btn {
+  background: transparent;
+  color: #fff;
+}
+
+.icon-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.icon-btn--small {
+  min-width: 42px;
+  padding: 8px 10px;
+}
+
+.text-link-btn {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.add-question-btn {
+  padding: 14px 18px;
+  background: #8f685a;
+  color: #fff;
+}
+
+.cancel-btn:disabled,
+.publish-btn:disabled,
+.add-question-btn:disabled,
+.icon-btn:disabled,
+.text-link-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.submit-row {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit-row .--primary-btn {
+  border: 0;
+  font-size: 16px;
+  border-radius: 10px;
+  padding: 10px 16px;
+
+  &::after {
+    display: none;
+  }
+}
+
+.submit-row .--primary-btn:hover {
+  cursor: pointer;
+  padding: 10px 16px;
+}
+
+.submit-row .--primary-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  padding: 10px 16px;
+}
