@@ -36,7 +36,7 @@
                 [disabled]="isSaving"
                 aria-label="Survey name leeren"
               >
-              <img src="icon/Delete.svg" alt="">
+              <img src="assets/icon/Delete.svg" alt="">
             </button>
             </div>
             <span class="error-msg" [class.error-msg--visible]="surveyForm.get('askName')?.invalid && surveyForm.get('askName')?.touched">
@@ -57,7 +57,7 @@
                   [disabled]="isSaving"
                   aria-label="End date leeren"
                 >
-                <img src="icon/Delete.svg" alt="">
+                <img src="assets/icon/Delete.svg" alt="">
               </button>
               </div>
             </div>
@@ -77,7 +77,7 @@
                   [disabled]="isSaving"
                   aria-label="Kategorie leeren"
                 >
-                  <img src="icon/Delete.svg" alt="Delete Icon">
+                  <img src="assets/icon/Delete.svg" alt="Delete Icon">
                 </button>
               </div>
             </div>
@@ -101,7 +101,7 @@
               [disabled]="isSaving"
               aria-label="Beschreibung leeren"
             >
-              <img src="icon/Delete.svg" alt="">
+              <img src="assets/icon/Delete.svg" alt="">
             </button>
           </div>
         </div>
@@ -142,7 +142,7 @@
                   [disabled]="isSaving"
                   aria-label="Fragetext leeren"
                 >
-                  <img src="icon/Delete.svg" alt="">
+                  <img src="assets/icon/Delete.svg" alt="">
                 </button>
               </div>
               <span class="error-msg" [class.error-msg--visible]="question.get('questionText')?.invalid && question.get('questionText')?.touched">
@@ -176,7 +176,7 @@
                     [disabled]="isSaving"
                     [attr.aria-label]="'Antwort ' + answerLabel(ai) + ' leeren'"
                   >
-                    <img src="icon/Delete.svg" alt="">
+                    <img src="assets/icon/Delete.svg" alt="">
                   </button>
                 </div>
                 <button

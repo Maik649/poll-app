@@ -31,7 +31,7 @@
     opacity: 0;
     transform: translateX(-6px) scale(0.92);
     transition: opacity 0.2s ease, transform 0.2s ease;
-    background: url('/icon/add_circle.svg') center / contain no-repeat;
+    background: url('../assets/icon/add_circle.svg') center / contain no-repeat;
   }
 
   &:hover {
@@ -79,7 +79,7 @@
     opacity: 0;
     transform: translateX(-4px);
     transition: opacity 0.2s ease, transform 0.2s ease;
-    background: url('/icon/check-dark.svg') center / contain no-repeat;
+    background: url('../assets/icon/check-dark.svg') center / contain no-repeat;
   }
 
   &:not(:disabled) {

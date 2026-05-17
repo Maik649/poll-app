@@ -153,9 +153,7 @@
 .submit-error {
   display: block;
   min-height: 16px;
-  /* Platz bleibt immer reserviert, auch ohne sichtbaren Fehlertext. */
   visibility: hidden;
-  /* Unsichtbar, aber layout-stabil, damit nichts springt. */
   color: #ffc5c5;
   font-size: 13px;
 

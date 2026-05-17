@@ -61,7 +61,7 @@
     transform: rotate(25deg);
     opacity: 0.95;
     height: 104px;
-    background: url('/icon/questin-mark.svg') center / contain no-repeat;
+    background: url('../../../../assets/icon/questin-mark.svg') center / contain no-repeat;
     pointer-events: none;
     z-index: 1;
     transition: transform 0.3s ease, opacity 0.3s ease;
@@ -76,7 +76,7 @@
     height: 86px;
     opacity: 0.9;
     transform: translateX(0);
-    background: url('/icon/star.svg') center / contain no-repeat;
+    background: url('../../../../assets/icon/star.svg') center / contain no-repeat;
     pointer-events: none;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
@@ -107,7 +107,7 @@
     height: 92px;
     opacity: 0.92;
     transform: scale(1);
-    background: url('/icon/typing-bubble.svg') center / contain no-repeat;
+    background: url('../../../../assets/icon/typing-bubble.svg') center / contain no-repeat;
     pointer-events: none;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
@@ -122,7 +122,7 @@
     opacity: 0.86;
     transform: translateX(0) scale(1);
     height: 96px;
-    background: url('/icon/check.svg') center / contain no-repeat;
+    background: url('../../../../assets/icon/check.svg') center / contain no-repeat;
     pointer-events: none;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
