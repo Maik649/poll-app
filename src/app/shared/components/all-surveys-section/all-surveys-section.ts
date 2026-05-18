@@ -25,12 +25,18 @@ export class AllSurveysSection implements OnInit {
   selectedCategory = 'all';
   isCategoryMenuOpen = false;
 
-  /** Loads surveys once the component is initialized. */
+  /**
+   * Loads surveys once the component is initialized.
+   * @returns void
+   */
   ngOnInit(): void {
     void this.loadSurveys();
   }
 
-  /** Loads survey data and updates loading state. */
+  /**
+   * Loads survey data and updates loading state.
+   * @returns Promise resolved after load cycle.
+   */
   private async loadSurveys(): Promise<void> {
     try {
       this.surveys = await this.surveyService.getSurveys();
@@ -44,13 +50,19 @@ export class AllSurveysSection implements OnInit {
     }
   }
 
-  /** Returns available categories extracted from all surveys. */
+  /**
+   * Returns available categories extracted from all surveys.
+   * @returns Sorted unique category list.
+   */
   get categories(): string[] {
     const unique = new Set(this.surveys.map((survey) => survey.category?.trim()).filter(Boolean) as string[]);
     return [...unique].sort((a, b) => a.localeCompare(b));
   }
 
-  /** Returns surveys filtered by status and category and then sorted. */
+  /**
+   * Returns surveys filtered by status and category and then sorted.
+   * @returns Filtered and sorted surveys.
+   */
   get filteredSurveys(): Surveys[] {
     const today = this.normalizeDate(new Date());
     return this.surveys
@@ -59,33 +71,54 @@ export class AllSurveysSection implements OnInit {
       .sort((a, b) => this.compareByCategoryAndEnd(a, b));
   }
 
-  /** Updates status tab filter. */
+  /**
+   * Updates the selected status tab filter.
+   * @param status New status filter value.
+   * @returns void
+   */
   setStatusFilter(status: SurveyStatusFilter): void {
     this.statusFilter = status;
   }
 
-  /** Applies category filter and closes dropdown. */
+  /**
+   * Applies the selected category filter and closes the dropdown.
+   * @param category Selected category label.
+   * @returns void
+   */
   updateCategory(category: string): void {
     this.selectedCategory = category;
     this.isCategoryMenuOpen = false;
   }
 
-  /** Toggles category menu visibility. */
+  /**
+   * Toggles category menu visibility.
+   * @returns void
+   */
   toggleCategoryMenu(): void {
     this.isCategoryMenuOpen = !this.isCategoryMenuOpen;
   }
 
-  /** Closes category menu. */
+  /**
+   * Closes the category menu.
+   * @returns void
+   */
   closeCategoryMenu(): void {
     this.isCategoryMenuOpen = false;
   }
 
-  /** Returns selected category label for UI text. */
+  /**
+   * Returns selected category label for UI text.
+   * @returns Category label shown in the UI.
+   */
   get selectedCategoryLabel(): string {
     return this.selectedCategory === 'all' ? 'All categories' : this.selectedCategory;
   }
 
-  /** Returns localized relative end-date text for badges. */
+  /**
+   * Returns a localized relative end-date label.
+   * @param endDate Survey end date value.
+   * @returns Relative status text.
+   */
   daysUntilEnd(endDate: string): string {
     const today = this.normalizeDate(new Date());
     const end = this.normalizeDate(new Date(endDate));
@@ -96,7 +129,11 @@ export class AllSurveysSection implements OnInit {
     return `Endet in ${diff} Tagen`;
   }
 
-  /** Returns true when survey end date is in the past. */
+  /**
+   * Checks whether a survey end date is in the past.
+   * @param endDate Survey end date value.
+   * @returns True when expired.
+   */
   isSurveyExpired(endDate: string): boolean {
     const today = this.normalizeDate(new Date());
     const end = this.normalizeDate(new Date(endDate));
@@ -104,7 +141,12 @@ export class AllSurveysSection implements OnInit {
     return end < today;
   }
 
-  /** Checks whether a survey passes the selected status filter. */
+  /**
+   * Checks whether a survey passes the selected status filter.
+   * @param survey Survey to evaluate.
+   * @param today Reference date normalized to midnight.
+   * @returns True when the survey matches the selected status filter.
+   */
   private matchesStatusFilter(survey: Surveys, today: Date): boolean {
     const end = this.normalizeDate(new Date(survey.endDate));
     if (Number.isNaN(end.getTime())) return false;
@@ -112,19 +154,32 @@ export class AllSurveysSection implements OnInit {
     return this.statusFilter === 'active' ? end >= today : end < today;
   }
 
-  /** Checks whether a survey matches selected category filter. */
+  /**
+   * Checks whether a survey matches the selected category filter.
+   * @param survey Survey to evaluate.
+   * @returns True when category matches.
+   */
   private matchesCategoryFilter(survey: Surveys): boolean {
     return this.selectedCategory === 'all' || survey.category === this.selectedCategory;
   }
 
-  /** Sorts surveys by category first and end date second. */
+  /**
+   * Sorts surveys by category and then by end date.
+   * @param a Left survey entry.
+   * @param b Right survey entry.
+   * @returns Negative/zero/positive sort value.
+   */
   private compareByCategoryAndEnd(a: Surveys, b: Surveys): number {
     const byCategory = (a.category ?? '').localeCompare(b.category ?? '');
     if (byCategory !== 0) return byCategory;
     return new Date(a.endDate).getTime() - new Date(b.endDate).getTime();
   }
 
-  /** Normalizes date to midnight for day-level comparison. */
+  /**
+   * Normalizes a date to midnight for day-level comparisons.
+   * @param date Date instance to normalize.
+   * @returns The same normalized date instance.
+   */
   private normalizeDate(date: Date): Date {
     date.setHours(0, 0, 0, 0);
     return date;

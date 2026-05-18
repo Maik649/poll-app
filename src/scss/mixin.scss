@@ -16,3 +16,37 @@ $breakpoints: (
     }
   }
 }
+
+@mixin scrollbars($size: 8px,
+  $foreground-color: rgb(255, 207, 161),
+  $background-color: rgb(53, 39, 58)) {
+
+// For Chrome & Safari
+&::-webkit-scrollbar {
+    width: $size;
+    background-color: $background-color;
+    height: $size;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    height: $size;
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, .1);
+    background-color: $foreground-color;
+  }
+
+
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: $background-color;
+  }
+
+  // // Standard version (Firefox only for now)
+  // scrollbar-color: $foreground-color $background-color;
+}
+
+
+
+
+

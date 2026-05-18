@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { createClient } from '@supabase/supabase-js';
+import { RealtimeChannel, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { Surveys } from '../components/surveys';
 
@@ -64,14 +64,14 @@ export class SurveyService {
     this.validateConfig();
   }
 
-  /** Validates the runtime Supabase configuration before any request is sent. */
+  /**
+   * Validates the runtime Supabase configuration before any request is sent.
+   * @returns void
+   */
   private validateConfig(): void {
     const { supabaseUrl, supabaseAnonKey } = environment;
 
-    const hasPlaceholderUrl =
-      !supabaseUrl ||
-      supabaseUrl.includes('YOUR_PROJECT_ID') ||
-      supabaseUrl.includes('your_project_id');
+    const hasPlaceholderUrl =!supabaseUrl || supabaseUrl.includes('YOUR_PROJECT_ID') ||supabaseUrl.includes('your_project_id');
 
     const hasPlaceholderKey =
       !supabaseAnonKey ||
@@ -83,7 +83,13 @@ export class SurveyService {
     }
   }
 
-  /** Wraps an async operation with a timeout to avoid hanging UI requests. */
+  /**
+   * Wraps an async operation with a timeout to avoid hanging UI requests.
+   * @param promise Promise-like operation to execute.
+   * @param label Operation label used in timeout errors.
+   * @param timeoutMs Timeout in milliseconds.
+   * @returns Promise resolved with the operation result.
+   */
   private async withTimeout<T>(promise: PromiseLike<T>, label: string, timeoutMs = 10000): Promise<T> {
     let timer: ReturnType<typeof setTimeout> | undefined;
 
@@ -102,7 +108,11 @@ export class SurveyService {
     }
   }
 
-  /** Creates a survey including its questions and answer options. */
+  /**
+   * Creates a survey including its questions and answer options.
+   * @param survey Survey payload to persist.
+   * @returns Promise resolved when all inserts succeed.
+   */
   async createSurvey(survey: Surveys): Promise<void> {
     const { data: insertedSurvey, error: surveyError } = await this.supabase
       .from('surveys')
@@ -127,9 +137,7 @@ export class SurveyService {
     }));
 
     const { data: insertedQuestions, error: questionsError } = await this.supabase
-      .from('survey_questions')
-      .insert(questionsPayload)
-      .select('id, position');
+      .from('survey_questions').insert(questionsPayload).select('id, position');
 
     if (questionsError || !insertedQuestions) {
       throw questionsError ?? new Error('Fragen konnten nicht gespeichert werden.');
@@ -145,23 +153,24 @@ export class SurveyService {
     });
 
     const { error: answersError } = await this.supabase
-      .from('survey_answers')
-      .insert(answersPayload);
+      .from('survey_answers').insert(answersPayload);
 
     if (answersError) {
       throw answersError;
     }
   }
 
-  /** Loads all surveys with nested questions and answer options. */
+  /**
+   * Loads all surveys with nested questions and answer options.
+   * @returns Surveys with expanded questions and answers.
+   */
   async getSurveys(): Promise<Surveys[]> {
     const { data: surveysData, error: surveysError } = await this.withTimeout(
       this.supabase
         .from('surveys')
         .select('id,ask_name,start_date,end_date,category')
         .order('id', { ascending: false }),
-      'Laden der Umfragen'
-    );
+      'Laden der Umfragen');
 
     if (surveysError) {
       throw surveysError;
@@ -204,7 +213,6 @@ export class SurveyService {
       if (answersError) {
         throw answersError;
       }
-
       answers = (answersData ?? []) as DbSurveyAnswer[];
     }
 
@@ -241,7 +249,11 @@ export class SurveyService {
       };
     });
   }
-    /** Loads one survey by id including its nested questions and answers. */
+    /**
+     * Loads one survey by id including its nested questions and answers.
+     * @param surveyId Survey identifier.
+     * @returns Survey with nested questions and answers, or null when missing.
+     */
 
   async getSurveyById(surveyId: string): Promise<Surveys | null> {
     const { data: surveyData, error: surveyError } = await this.withTimeout(
@@ -250,8 +262,7 @@ export class SurveyService {
         .select('id,ask_name,start_date,end_date,category')
         .eq('id', surveyId)
         .maybeSingle(),
-      'Laden der Umfrage'
-    );
+      'Laden der Umfrage');
 
     if (surveyError) {
       throw surveyError;
@@ -260,7 +271,6 @@ export class SurveyService {
     if (!surveyData) {
       return null;
     }
-
     const survey = surveyData as DbSurvey;
 
     const { data: questionsData, error: questionsError } = await this.withTimeout(
@@ -287,13 +297,11 @@ export class SurveyService {
           .select('id,question_id,answer_text,position')
           .in('question_id', questionIds)
           .order('position', { ascending: true }),
-        'Laden der Antworten'
-      );
+        'Laden der Antworten' );
 
       if (answersError) {
         throw answersError;
       }
-
       answers = (answersData ?? []) as DbSurveyAnswer[];
     }
 
@@ -314,13 +322,17 @@ export class SurveyService {
         id: question.id,
         questionText: question.question_text,
         answers: [...(answersByQuestionId.get(question.id) ?? [])]
-          .sort((a, b) => a.position - b.position)
-          .map((answer) => ({ id: answer.id, text: answer.answer_text })),
+          .sort((a, b) => a.position - b.position).map((answer) => ({ id: answer.id, text: answer.answer_text })),
       })),
     };
   }
 
-  /** Stores the selected answers for one survey submission. */
+  /**
+   * Stores the selected answers for one survey submission.
+   * @param surveyId Survey identifier.
+   * @param submission Selected answers grouped by question.
+   * @returns Promise resolved when vote rows are written.
+   */
   async submitSurveyVote(surveyId: string, submission: SurveySubmission[]): Promise<void> {
     const rows: SurveyVoteRow[] = submission.flatMap((questionSubmission) =>
       questionSubmission.answerIds.map((answerId) => ({
@@ -335,16 +347,18 @@ export class SurveyService {
     }
 
     const { error } = await this.withTimeout(
-      this.supabase.from('survey_answer_votes').insert(rows),
-      'Speichern der Abstimmung'
-    );
+      this.supabase.from('survey_answer_votes').insert(rows),'Speichern der Abstimmung');
 
     if (error) {
       throw error;
     }
   }
 
-  /** Aggregates persisted votes for the live result display of one survey. */
+  /**
+   * Aggregates persisted votes for the live result display of one survey.
+   * @param surveyId Survey identifier.
+   * @returns Vote counts grouped by answer and question id.
+   */
   async getSurveyVoteCounts(surveyId: string): Promise<SurveyVoteCounts> {
     const { data, error } = await this.withTimeout(
       this.supabase
@@ -353,7 +367,6 @@ export class SurveyService {
         .eq('survey_id', surveyId),
       'Laden der Live-Ergebnisse'
     );
-
     if (error) {
       throw error;
     }
@@ -366,7 +379,27 @@ export class SurveyService {
       byAnswerId[row.answer_id] = (byAnswerId[row.answer_id] ?? 0) + 1;
       byQuestionId[row.question_id] = (byQuestionId[row.question_id] ?? 0) + 1;
     }
-
     return { byAnswerId, byQuestionId };
+  }
+
+  /**
+   * Subscribes to vote changes for one survey and returns a cleanup function.
+   * @param surveyId Survey identifier.
+   * @param onChange Callback executed after vote table changes.
+   * @returns Cleanup callback to remove the channel subscription.
+   */
+  subscribeToSurveyVoteChanges(surveyId: string, onChange: () => void): () => void {
+    const channelName = `survey-votes-${surveyId}-${Math.random().toString(36).slice(2)}`;
+    const channel: RealtimeChannel = this.supabase
+      .channel(channelName).on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'survey_answer_votes',
+          filter: `survey_id=eq.${surveyId}`,
+        },
+        () => onChange()).subscribe();
+    return () => {
+      void this.supabase.removeChannel(channel);
+    };
   }
 }

@@ -1,4 +1,4 @@
-@use '../../../../scss/varieable' as *;
+@use '../../../../scss/varieable'as *;
 
 .participation {
   flex-direction: column;
@@ -36,9 +36,11 @@
 .meta-left {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 0px;
   margin-bottom: 10px;
+  padding: 10px;
 }
 
 .pill {
@@ -123,8 +125,8 @@ h1 {
 }
 
 .results-panel {
-  
- 
+
+
   padding: 18px;
 }
 
@@ -218,12 +220,12 @@ h1 {
   }
 
   .participation {
-   margin: 0 15px;
+    margin: 0 15px;
   }
 
   .participation__layout {
     grid-template-columns: 1fr;
-   
+
   }
 
   .results-panel {

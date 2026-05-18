@@ -1,4 +1,19 @@
 <div class="form-wrapper">
+  <div class="submit-dialog-backdrop" *ngIf="isSubmitDialogOpen" (click)="confirmSubmitDialog()">
+    <section
+      class="submit-dialog"
+      [class.submit-dialog--error]="submitDialogType === 'error'"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="submitDialogTitle"
+      (click)="$event.stopPropagation()"
+    >
+      <h2>{{ submitDialogTitle }}</h2>
+      <p>{{ submitDialogMessage }}</p>
+      <button class="publish-btn" type="button" (click)="confirmSubmitDialog()">OK</button>
+    </section>
+  </div>
+
   <form class="creator-shell" [formGroup]="surveyForm" (ngSubmit)="onSubmit()">
     <span class="draft-badge">Draft</span>
 
@@ -62,24 +77,15 @@
               </div>
             </div>
 
-            <div class="form-group">
-              <!-- <label for="category">Choose category</label> -->
-              <div class="input-with-icon">
-                <select id="category" formControlName="category">
+            <div class="form-group form-group--category">
+              <label for="category" class="sr-only">Choose category</label>
+              <div class="category-select-wrap" [class.has-value]="hasControlValue('category')">
+                <select id="category" formControlName="category" class="category-select" aria-label="Choose category">
                   <option value="">Choose category</option>
                   <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
                 </select>
-                <button
-                  class="clear-btn"
-                  type="button"
-                  (click)="clearControl('category')"
-                  *ngIf="hasControlValue('category')"
-                  [disabled]="isSaving"
-                  aria-label="Kategorie leeren"
-                >
-                  <img src="assets/icon/Delete.svg" alt="Delete Icon">
-                </button>
               </div>
+              <span class="selected-category" *ngIf="hasControlValue('category')">{{ selectedCategory }}</span>
             </div>
           </div>
         </div>
@@ -132,6 +138,7 @@
                   type="text"
                   formControlName="questionText"
                   placeholder="Which date would work best for you?"
+                  class="--question-input"
                   [class.invalid]="question.get('questionText')?.invalid && question.get('questionText')?.touched"
                 />
                 <button

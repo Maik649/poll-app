@@ -17,7 +17,10 @@ export class Header implements OnInit, OnDestroy {
 
   showCreateSurveyButton = false;
 
-  /** Subscribes to navigation changes and updates the header action state. */
+  /**
+   * Subscribes to navigation changes and updates the header action state.
+   * @returns void
+   */
   ngOnInit(): void {
     this.updateButtonVisibility(this.router.url);
 
@@ -28,12 +31,19 @@ export class Header implements OnInit, OnDestroy {
     });
   }
 
-  /** Releases the route subscription when the header is destroyed. */
+  /**
+   * Releases the route subscription when the header is destroyed.
+   * @returns void
+   */
   ngOnDestroy(): void {
     this.routeSubscription?.unsubscribe();
   }
 
-  /** Computes whether the create-survey shortcut should be visible. */
+  /**
+   * Computes whether the create-survey shortcut should be visible.
+   * @param url Active router URL.
+   * @returns void
+   */
   private updateButtonVisibility(url: string): void {
     this.showCreateSurveyButton = url.startsWith('/umfrage/');
     this.cdr.detectChanges();

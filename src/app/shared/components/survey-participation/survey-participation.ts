@@ -4,6 +4,14 @@ import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators } 
 import { ActivatedRoute, Router } from '@angular/router';
 import { SurveyService, SurveySubmission } from '../../services/survey.service';
 import { Surveys } from '../surveys';
+import {
+  buildAnswerLabel,
+  buildSurveySubmissionPayload,
+  calcResultPercent,
+  formatDateDe,
+  surveyIsExpired,
+  waitMs,
+} from './survey-participation.utils';
 
 @Component({
   selector: 'app-survey-participation',
@@ -29,20 +37,26 @@ export class SurveyParticipation implements OnInit, OnDestroy {
   isSubmitting = false;
   voteCountsByAnswerId: Record<string, number> = {};
   voteTotalsByQuestionId: Record<string, number> = {};
-  private pollTimer: ReturnType<typeof setInterval> | null = null;
+  private stopVoteRealtimeListener: (() => void) | null = null;
 
   surveyForm = this.fb.group({
     questions: this.fb.array<FormControl<string[]>>([]),
   });
 
-  /** Returns typed access to the dynamic question form array. */
+  /**
+   * Returns typed access to the dynamic question form array.
+   * @returns Question control form array.
+   */
   get questionsArray(): FormArray<FormControl<string[]>> {
     return this.surveyForm.get('questions') as FormArray<FormControl<string[]>>;
   }
 
-  /** Initializes page styles, validates route id and loads survey data. */
+  /**
+   * Initializes page styles, validates route id and loads survey data.
+   * @returns Promise resolved after initial loading sequence.
+   */
   async ngOnInit(): Promise<void> {
-    this.addPageClass();
+    this.document.body.classList.add('survey-page');
     this.surveyId = this.route.snapshot.paramMap.get('id');
 
     if (!this.ensureSurveyId()) {
@@ -54,43 +68,48 @@ export class SurveyParticipation implements OnInit, OnDestroy {
     this.finishInitialLoading();
   }
 
-  /** Cleans up page class and active polling timer. */
+  /**
+   * Cleans up page class and active realtime listener.
+   * @returns void
+   */
   ngOnDestroy(): void {
     this.document.body.classList.remove('survey-page');
-    this.stopPolling();
+    this.stopVoteRealtimeUpdates();
   }
 
-  /** Adds body class for participation page styling. */
-  private addPageClass(): void {
-    this.document.body.classList.add('survey-page');
-  }
-
-  /** Ensures a survey id exists and sets error when missing. */
+  /**
+   * Ensures a survey id exists and sets an error when missing.
+   * @returns True when survey id is available.
+   */
   private ensureSurveyId(): boolean {
     if (this.surveyId) {
       return true;
     }
-
     this.loadError = 'Keine Umfrage-ID gefunden.';
     return false;
   }
 
-  /** Loads survey, validates state and starts live updates. */
+  /**
+   * Loads survey, validates state and starts live updates.
+   * @returns Promise resolved after lifecycle loading finishes.
+   */
   private async loadSurveyLifecycle(): Promise<void> {
     try {
       const survey = await this.fetchSurvey();
       if (!survey || !this.prepareLoadedSurvey(survey)) {
         return;
       }
-
       await this.loadVoteCounts();
-      this.startLivePolling();
+      this.startVoteRealtimeUpdates();
     } catch (error: unknown) {
       this.setLoadError(error);
     }
   }
 
-  /** Fetches a survey from backend by route id. */
+  /**
+   * Fetches a survey from backend by route id.
+   * @returns Loaded survey or null when id is missing.
+   */
   private async fetchSurvey(): Promise<Surveys | null> {
     if (!this.surveyId) {
       return null;
@@ -99,9 +118,13 @@ export class SurveyParticipation implements OnInit, OnDestroy {
     return this.surveyService.getSurveyById(this.surveyId);
   }
 
-  /** Stores loaded survey and rejects expired entries. */
+  /**
+   * Stores loaded survey and rejects expired entries.
+   * @param survey Loaded survey instance.
+   * @returns True when survey can be used for participation.
+   */
   private prepareLoadedSurvey(survey: Surveys): boolean {
-    if (this.isSurveyExpired(survey.endDate)) {
+    if (surveyIsExpired(survey.endDate)) {
       this.loadError = 'Diese Umfrage ist bereits abgelaufen und kann nicht mehr ausgefuellt werden.';
       return false;
     }
@@ -111,39 +134,57 @@ export class SurveyParticipation implements OnInit, OnDestroy {
     return true;
   }
 
-  /** Maps unknown load errors to a user-facing message. */
+  /**
+   * Maps unknown load errors to a user-facing message.
+   * @param error Thrown error value.
+   * @returns void
+   */
   private setLoadError(error: unknown): void {
     const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
     this.loadError = `Umfrage konnte nicht geladen werden: ${message}`;
   }
 
-  /** Finishes initial loading state and refreshes view. */
+  /**
+   * Finishes initial loading state and refreshes view.
+   * @returns void
+   */
   private finishInitialLoading(): void {
     this.isLoading = false;
     this.cdr.detectChanges();
   }
 
-  /** Starts polling and replaces existing interval if needed. */
-  private startLivePolling(): void {
+  /**
+   * Starts realtime subscription and replaces existing listener if needed.
+   * @returns void
+   */
+  private startVoteRealtimeUpdates(): void {
     if (!this.surveyId) {
       return;
     }
 
-    this.stopPolling();
-    this.pollTimer = setInterval(() => void this.loadVoteCounts(), 5000);
+    this.stopVoteRealtimeUpdates();
+    this.stopVoteRealtimeListener = this.surveyService.subscribeToSurveyVoteChanges(this.surveyId, () => {
+      void this.loadVoteCounts();
+    });
   }
 
-  /** Stops the current polling interval. */
-  private stopPolling(): void {
-    if (!this.pollTimer) {
+  /**
+   * Stops the current realtime subscription.
+   * @returns void
+   */
+  private stopVoteRealtimeUpdates(): void {
+    if (!this.stopVoteRealtimeListener) {
       return;
     }
 
-    clearInterval(this.pollTimer);
-    this.pollTimer = null;
+    this.stopVoteRealtimeListener();
+    this.stopVoteRealtimeListener = null;
   }
 
-  /** Fetches current vote counts while keeping UI responsive. */
+  /**
+   * Fetches current vote counts while keeping UI responsive.
+   * @returns Promise resolved after count refresh.
+   */
   private async loadVoteCounts(): Promise<void> {
     if (!this.surveyId) {
       return;
@@ -159,27 +200,36 @@ export class SurveyParticipation implements OnInit, OnDestroy {
     }
   }
 
-  /** Creates one required multi-select control per question. */
+  /**
+   * Creates one required multi-select control per question.
+   * @param survey Current survey model.
+   * @returns void
+   */
   private buildForm(survey: Surveys): void {
     this.questionsArray.clear();
-
     for (const _question of survey.ask) {
-      this.questionsArray.push(this.createQuestionControl());
+      this.questionsArray.push(this.fb.control<string[]>([], { nonNullable: true, validators: [Validators.required] }));
     }
   }
 
-  /** Builds a default question control with required validator. */
-  private createQuestionControl(): FormControl<string[]> {
-    return this.fb.control<string[]>([], { nonNullable: true, validators: [Validators.required] });
-  }
-
-  /** Returns whether an answer is selected for a question index. */
+  /**
+   * Returns whether an answer is selected for a question index.
+   * @param questionIndex Index of the question.
+   * @param answerText Stored answer id or text.
+   * @returns True when selected.
+   */
   isAnswerChecked(questionIndex: number, answerText: string): boolean {
     const selectedAnswers = this.questionsArray.at(questionIndex).value;
     return selectedAnswers.includes(answerText);
   }
 
-  /** Adds or removes an answer from the question selection. */
+  /**
+   * Adds or removes an answer from the question selection.
+   * @param questionIndex Index of the question.
+   * @param answerText Stored answer id or text.
+   * @param checked Checkbox checked state.
+   * @returns void
+   */
   toggleAnswer(questionIndex: number, answerText: string, checked: boolean): void {
     const control = this.questionsArray.at(questionIndex);
     const current = control.value;
@@ -188,21 +238,26 @@ export class SurveyParticipation implements OnInit, OnDestroy {
       control.setValue([...current, answerText]);
       return;
     }
-
     control.setValue(current.filter((answer) => answer !== answerText));
   }
 
-  /** Converts answer index to alphabetical label. */
+  /**
+   * Converts answer index to alphabetical label.
+   * @param answerIndex Zero-based answer index.
+   * @returns Alphabetical label.
+   */
   answerLabel(answerIndex: number): string {
-    return String.fromCharCode(65 + answerIndex);
+    return buildAnswerLabel(answerIndex);
   }
 
-  /** Validates and submits survey vote, then redirects to home. */
+  /**
+   * Validates and submits survey vote, then redirects to home.
+   * @returns Promise resolved when submit flow ends.
+   */
   async submitSurvey(): Promise<void> {
     if (!this.canSubmit()) {
       return;
     }
-
     this.beginSubmit();
 
     try {
@@ -215,7 +270,10 @@ export class SurveyParticipation implements OnInit, OnDestroy {
     }
   }
 
-  /** Checks submit preconditions and sets validation errors. */
+  /**
+   * Checks submit preconditions and sets validation errors.
+   * @returns True when submission can proceed.
+   */
   private canSubmit(): boolean {
     if (this.submitSuccess || this.isSubmitting) return false;
 
@@ -224,139 +282,108 @@ export class SurveyParticipation implements OnInit, OnDestroy {
       return false;
     }
 
-    if (this.hasSurveyContext()) return true;
-    this.setMissingSurveyError();
+    if (this.surveyId && this.survey) return true;
+    this.submitError = 'Umfrage konnte nicht zugeordnet werden.';
     return false;
   }
 
-  /** Checks whether survey and id are available for submission. */
-  private hasSurveyContext(): boolean {
-    return Boolean(this.surveyId && this.survey);
-  }
-
-  /** Sets submit error when survey context is missing. */
-  private setMissingSurveyError(): void {
-    this.submitError = 'Umfrage konnte nicht zugeordnet werden.';
-  }
-
-  /** Prepares submit state before API interaction. */
+  /**
+   * Prepares submit state before API interaction.
+   * @returns void
+   */
   private beginSubmit(): void {
     this.submitError = '';
     this.submitSuccess = false;
     this.isSubmitting = true;
   }
 
-  /** Persists selected answers to backend. */
+  /**
+   * Persists selected answers to backend.
+   * @returns Promise resolved after vote and refresh are saved.
+   */
   private async persistVote(): Promise<void> {
     const payload = this.buildSubmissionPayload();
     await this.surveyService.submitSurveyVote(this.surveyId!, payload);
+    await this.loadVoteCounts();
   }
 
-  /** Sets success state and performs delayed home redirect. */
+  /**
+   * Sets success state and performs delayed home redirect.
+   * @returns Promise resolved after navigation.
+   */
   private async handleSuccessRedirect(): Promise<void> {
     this.submitSuccess = true;
-    await this.wait(2000);
+    this.cdr.detectChanges();
+    await waitMs(3000);
     await this.router.navigate(['/']);
   }
 
-  /** Wait helper used for transition timing. */
-  private wait(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  /** Maps unknown submit errors to user-facing text. */
+  /**
+   * Maps unknown submit errors to user-facing text.
+   * @param error Thrown error value.
+   * @returns void
+   */
   private setSubmitError(error: unknown): void {
     const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
     this.submitError = `Abstimmung konnte nicht gespeichert werden: ${message}`;
   }
 
-  /** Finalizes submit cycle and refreshes view. */
+  /**
+   * Finalizes submit cycle and refreshes view.
+   * @returns void
+   */
   private finishSubmit(): void {
     this.isSubmitting = false;
     this.cdr.detectChanges();
   }
 
-  /** Builds API submission payload from selected answers. */
+  /**
+   * Builds API submission payload from selected answers.
+   * @returns Array of question submissions.
+   */
   private buildSubmissionPayload(): SurveySubmission[] {
-    if (!this.survey) {
-      return [];
-    }
-
-    return this.survey.ask
-      .map((question, questionIndex) => ({
-        questionId: question.id ?? '',
-        answerIds: this.questionsArray.at(questionIndex).value,
-      }))
-      .filter((submission) => submission.questionId.length > 0 && submission.answerIds.length > 0);
+    if (!this.survey) return [];
+    return buildSurveySubmissionPayload(this.survey, this.questionsArray);
   }
 
-  /** Returns true when a question field has a visible validation error. */
+  /**
+   * Returns true when a question field has a visible validation error.
+   * @param index Question index.
+   * @returns True when invalid and touched.
+   */
   questionHasError(index: number): boolean {
     const control = this.questionsArray.at(index);
     return control.invalid && control.touched;
   }
 
-  /** Returns localized relative end-date text for badges. */
-  daysUntilEnd(endDate: string): string {
-    const today = this.normalizeDate(new Date());
-    const end = this.normalizeDate(new Date(endDate));
-    const diff = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (diff < 0) return 'Abgelaufen';
-    if (diff === 0) return 'Endet heute';
-    if (diff === 1) return 'Endet in 1 Tag';
-    return `Endet in ${diff} Tagen`;
-  }
-
-  /** Checks whether a survey end date is already in the past. */
-  isSurveyExpired(endDate: string): boolean {
-    const today = this.normalizeDate(new Date());
-    const end = this.normalizeDate(new Date(endDate));
-    if (Number.isNaN(end.getTime())) return true;
-    return end < today;
-  }
-
-  /** Normalizes a date to midnight for day-based comparisons. */
-  private normalizeDate(date: Date): Date {
-    date.setHours(0, 0, 0, 0);
-    return date;
-  }
-
-  /** Formats date strings in de-DE locale. */
+  /**
+   * Formats date strings in de-DE locale.
+   * @param dateValue Input date string.
+   * @returns Localized label or fallback value.
+   */
   formatDate(dateValue: string): string {
-    if (!dateValue) {
-      return '-';
-    }
-
-    const date = new Date(dateValue);
-    if (Number.isNaN(date.getTime())) {
-      return dateValue;
-    }
-
-    return new Intl.DateTimeFormat('de-DE').format(date);
+    return formatDateDe(dateValue);
   }
 
-  /** Returns vote percentage for one answer within a question. */
+  /**
+   * Returns vote percentage for one answer within a question.
+   * @param questionId Question identifier.
+   * @param answerId Answer identifier.
+   * @returns Rounded percentage value.
+   */
   resultPercent(questionId: string | undefined, answerId: string | undefined): number {
-    if (!questionId || !answerId) {
-      return 0;
-    }
-
-    const questionTotal = this.voteTotalsByQuestionId[questionId] ?? 0;
-    if (questionTotal === 0) {
-      return 0;
-    }
-
-    const answerVotes = this.voteCountsByAnswerId[answerId] ?? 0;
-    return Math.round((answerVotes / questionTotal) * 100);
+    return calcResultPercent(questionId, answerId, {
+      byAnswerId: this.voteCountsByAnswerId,
+      byQuestionId: this.voteTotalsByQuestionId,
+    });
   }
 
-  /** Returns absolute vote count for an answer id. */
+  /**
+   * Returns absolute vote count for an answer id.
+   * @param answerId Answer identifier.
+   * @returns Vote count for that answer.
+   */
   resultVotes(answerId: string | undefined): number {
-    if (!answerId) {
-      return 0;
-    }
-
-    return this.voteCountsByAnswerId[answerId] ?? 0;
+    return this.voteCountsByAnswerId[answerId ?? ''] ?? 0;
   }
 }

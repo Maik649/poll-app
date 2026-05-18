@@ -20,13 +20,24 @@ $fonts-color-primary: rgba(53, 39, 58, 1);
     width: 100%;
 }
 
-.subheadline{
+.subheadline-text{
     font-family: $fontFamily_Mulish;
     font-size: 24px;
     font-weight: 600;
     color: $bg-card;
+
+    @include respond-to('small') {
+      font-size: 20px;
+    }
+}
+
+.subheadline{
+    font-family: $fontFamily_Mulish;
+    font-size: 32px;
+    font-weight: 600;
+    color: $bg-card;
      @include respond-to('small') {
-        font-size: 20px;
+        font-size: 24px;
   }
 }
 

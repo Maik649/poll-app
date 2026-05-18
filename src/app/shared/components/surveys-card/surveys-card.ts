@@ -19,12 +19,18 @@ export class SurveysCard implements OnInit {
   isLoading = true;
   loadError = '';
 
-  /** Loads surveys once the component is initialized. */
+  /**
+   * Loads surveys once the component is initialized.
+   * @returns void
+   */
   ngOnInit(): void {
     void this.loadSurveys();
   }
 
-  /** Loads all surveys for the card section and handles load state. */
+  /**
+   * Loads all surveys for the card section and handles load state.
+   * @returns Promise resolved after load cycle.
+   */
   private async loadSurveys(): Promise<void> {
     try {
       this.surveys = await this.surveyService.getSurveys();
@@ -38,7 +44,10 @@ export class SurveysCard implements OnInit {
     }
   }
 
-  /** Returns the top 3 active surveys ordered by nearest end date. */
+  /**
+   * Returns the top 3 active surveys ordered by nearest end date.
+   * @returns Up to three active surveys ordered by urgency.
+   */
   get topUrgentSurveys(): Surveys[] {
     return this.surveys
       .filter((survey) => !this.isSurveyExpired(survey.endDate))
@@ -46,7 +55,11 @@ export class SurveysCard implements OnInit {
       .slice(0, 3);
   }
 
-  /** Returns true when survey is expired or date is invalid. */
+  /**
+   * Checks whether a survey is expired or date is invalid.
+   * @param endDate Survey end date value.
+   * @returns True when survey is expired.
+   */
   isSurveyExpired(endDate: string): boolean {
     const today = this.normalizeDate(new Date());
     const end = this.normalizeDate(new Date(endDate));
@@ -54,7 +67,11 @@ export class SurveysCard implements OnInit {
     return end < today;
   }
 
-  /** Returns localized text for remaining days until end date. */
+  /**
+   * Returns localized text for remaining days until end date.
+   * @param endDate Survey end date value.
+   * @returns Relative remaining-time label.
+   */
   daysUntilEnd(endDate: string): string {
     const today = this.normalizeDate(new Date());
     const end = this.normalizeDate(new Date(endDate));
@@ -65,13 +82,21 @@ export class SurveysCard implements OnInit {
     return `Ends in ${diff} Days`;
   }
 
-  /** Normalizes a date to local midnight for date-only checks. */
+  /**
+   * Normalizes a date to local midnight for date-only checks.
+   * @param date Date instance to normalize.
+   * @returns The normalized date instance.
+   */
   private normalizeDate(date: Date): Date {
     date.setHours(0, 0, 0, 0);
     return date;
   }
 
-  /** Formats a date using de-DE locale. */
+  /**
+   * Formats a date using de-DE locale.
+   * @param dateValue Input date string.
+   * @returns Localized date label or fallback value.
+   */
   formatDate(dateValue: string): string {
     if (!dateValue) {
       return '-';

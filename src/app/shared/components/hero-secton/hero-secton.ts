@@ -15,32 +15,52 @@ import { inject } from '@angular/core';
 export class HeroSecton {
   private router = inject(Router);
 
-  /** Returns whether the create-survey dialog route is currently active. */
+  /**
+   * Returns whether the create-survey dialog route is currently active.
+   * @returns True when dialog route is active.
+   */
   get isCreateDialogOpen(): boolean {
     return this.router.url.startsWith('/umfrage-erstellen');
   }
 
-  /** Applies body scroll locking when the component initializes. */
+  /**
+   * Applies body scroll locking when the component initializes.
+   * @returns void
+   */
   ngOnInit(): void {
     this.updateBodyScroll(this.isCreateDialogOpen);
   }
 
-  /** Restores body scrolling when the component is destroyed. */
+  /**
+   * Restores body scrolling when the component is destroyed.
+   * @returns void
+   */
   ngOnDestroy(): void {
     document.body.style.overflow = '';
   }
 
-  /** Updates the document scroll behavior while the dialog is open. */
+  /**
+   * Updates document scroll behavior while the dialog is open.
+   * @param isOpen True when dialog is open.
+   * @returns void
+   */
   private updateBodyScroll(isOpen: boolean): void {
     document.body.style.overflow = isOpen ? 'hidden' : '';
   }
   
-  /** Closes the create-survey dialog by navigating back to the home route. */
+  /**
+   * Closes the create-survey dialog by navigating back to the home route.
+   * @returns void
+   */
   closeCreateDialog(): void {
     void this.router.navigate(['/']);
   }
 
-  /** Prevents the native dialog cancel behavior and closes through routing. */
+  /**
+   * Prevents the native dialog cancel behavior and closes through routing.
+   * @param event Cancel event emitted by the dialog.
+   * @returns void
+   */
   onDialogCancel(event: Event): void {
     event.preventDefault();
     this.closeCreateDialog();
