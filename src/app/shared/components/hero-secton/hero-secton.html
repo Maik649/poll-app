@@ -18,7 +18,7 @@
 </section>
 <app-surveys-section></app-surveys-section>
 <dialog class="create-survey-dialog" [open]="isCreateDialogOpen" (cancel)="onDialogCancel($event)">
-    <button class="dialog-close-btn" type="button" (click)="closeCreateDialog()" aria-label="Dialog schliessen">x</button>
+    <button class="dialog-close-btn --dialog-close-btn-normel" type="button" (click)="closeCreateDialog()" aria-label="Dialog schliessen">x</button>
     <app-survey-form [isDialogMode]="true" (closed)="closeCreateDialog()" (saved)="closeCreateDialog()"></app-survey-form>
 </dialog>
 

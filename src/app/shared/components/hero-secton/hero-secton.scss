@@ -158,9 +158,9 @@
   z-index: 1000;
 }
 
-.create-survey-dialog::backdrop {
+dialog::backdrop {
   background: rgba(22, 13, 27, 0.72);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(100%);
 }
 
 .dialog-close-btn {
@@ -172,12 +172,16 @@
   height: 38px;
   border: 0;
   border-radius: 999px;
-  background: #ffd39a;
+  background: #8f685a;
   color: #2f2233;
   font-size: 22px;
   line-height: 1;
   cursor: pointer;
 }
+
+ .--dialog-close-btn-normel {
+   visibility: hidden;
+ }
 
 @include respond-to('medium') {
   .content-wrapper {
@@ -265,6 +269,21 @@
   .create-survey-dialog {
     width: calc(100vw - 10px);
     max-height: calc(100vh - 10px);
+  }
+}
+
+
+
+@include respond-to('medium') {
+  .--dialog-close-btn-normel{
+    visibility: hidden;
+  }
+}
+
+
+@include respond-to('small') {
+  .--dialog-close-btn-normel {
+    visibility: visible;
   }
 }
 

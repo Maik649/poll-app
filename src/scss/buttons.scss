@@ -1,4 +1,5 @@
 @use './varieable.scss'as *;
+@use './mixin.scss'as *;
 
 .header-create-btn {
   text-decoration: none;
@@ -53,8 +54,15 @@
   border-radius: 14px;
   font-family: $fontFamily_Nokora-Bold;
   font-size: 15px;
+  visibility: visible;
   cursor: pointer;
 }
+
+ @include respond-to('small') {
+.--cancel-btn-mobile{
+  visibility: hidden;
+}
+ }
 
 .publish-btn {
   position: relative;
