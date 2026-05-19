@@ -63,7 +63,7 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/angular-projects/",
+              "baseHref": "/angular-projects/pollapp/",
               "budgets": [
                 {
                   "type": "initial",
@@ -72,7 +72,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "8kB",
+                  "maximumWarning": "12kB",
                   "maximumError": "12kB"
                 }
               ],
