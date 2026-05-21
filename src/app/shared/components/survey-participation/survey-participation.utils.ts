@@ -1,4 +1,4 @@
-import { FormArray, FormControl } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { SurveySubmission, SurveyVoteCounts } from '../../services/survey.service';
 import { Surveys } from '../surveys';
 
@@ -103,4 +103,116 @@ export function buildSurveySubmissionPayload(
       answerIds: questionsArray.at(questionIndex).value,
     }))
     .filter((submission) => submission.questionId.length > 0 && submission.answerIds.length > 0);
+}
+
+/**
+ * Returns an error string when survey id is missing.
+ * @param surveyId Survey identifier from route.
+ * @returns Null when id exists, otherwise error text.
+ */
+export function ensureSurveyIdOrError(surveyId: string | null): string | null {
+  return surveyId ? null : 'Keine Umfrage-ID gefunden.';
+}
+
+/**
+ * Maps unknown errors to a prefixed user-facing message.
+ * @param prefix Text prefix shown before the error details.
+ * @param error Unknown thrown value.
+ * @returns Final user-facing message.
+ */
+export function buildUnknownErrorMessage(prefix: string, error: unknown): string {
+  const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
+  return `${prefix}${message}`;
+}
+
+/**
+ * Rebuilds the dynamic answer-selection controls for all questions.
+ * @param formBuilder Angular form builder instance.
+ * @param questionsArray Target questions array to rewrite.
+ * @param survey Current survey model.
+ * @returns void
+ */
+export function buildQuestionSelectionForm(
+  formBuilder: FormBuilder,
+  questionsArray: FormArray<FormControl<string[]>>,
+  survey: Surveys
+): void {
+  questionsArray.clear();
+  for (const _question of survey.ask) {
+    questionsArray.push(formBuilder.control<string[]>([], { nonNullable: true, validators: [Validators.required] }));
+  }
+}
+
+/**
+ * Returns selected draft answers for one question id.
+ * @param survey Current survey model.
+ * @param questionId Question identifier.
+ * @param questionsArray Form array with current selections.
+ * @returns Selected answer ids for this question.
+ */
+export function getDraftSelectionForQuestion(
+  survey: Surveys | null,
+  questionId: string,
+  questionsArray: FormArray<FormControl<string[]>>
+): string[] {
+  if (!survey) {
+    return [];
+  }
+
+  const questionIndex = survey.ask.findIndex((question) => question.id === questionId);
+  if (questionIndex < 0) {
+    return [];
+  }
+
+  return questionsArray.at(questionIndex).value;
+}
+
+/**
+ * Returns storage key used to lock voting per survey.
+ * @param keyPrefix Vote-lock key prefix.
+ * @param surveyId Current survey id.
+ * @returns Local storage key for this survey.
+ */
+export function voteLockKeyForSurvey(keyPrefix: string, surveyId: string | null): string | null {
+  if (!surveyId) {
+    return null;
+  }
+  return `${keyPrefix}${surveyId}`;
+}
+
+/**
+ * Checks whether a local vote lock already exists for this survey.
+ * @param document Browser document used to access local storage.
+ * @param key Local storage key for vote lock.
+ * @returns True when user already voted from this browser.
+ */
+export function hasVoteLockForSurvey(document: Document, key: string | null): boolean {
+  const storage = document.defaultView?.localStorage;
+  if (!key || !storage) {
+    return false;
+  }
+
+  try {
+    return storage.getItem(key) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Persists a local vote lock after successful submission.
+ * @param document Browser document used to access local storage.
+ * @param key Local storage key for vote lock.
+ * @returns void
+ */
+export function storeVoteLockForSurvey(document: Document, key: string | null): void {
+  const storage = document.defaultView?.localStorage;
+  if (!key || !storage) {
+    return;
+  }
+
+  try {
+    storage.setItem(key, '1');
+  } catch {
+  }
 }

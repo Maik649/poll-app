@@ -1,15 +1,22 @@
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SurveyService, SurveySubmission } from '../../services/survey.service';
 import { Surveys } from '../surveys';
 import {
   buildAnswerLabel,
+  buildQuestionSelectionForm,
   buildSurveySubmissionPayload,
+  buildUnknownErrorMessage,
   calcResultPercent,
+  ensureSurveyIdOrError,
   formatDateDe,
+  getDraftSelectionForQuestion,
+  hasVoteLockForSurvey,
+  storeVoteLockForSurvey,
   surveyIsExpired,
+  voteLockKeyForSurvey,
   waitMs,
 } from './survey-participation.utils';
 
@@ -21,6 +28,7 @@ import {
 })
 /** Handles vote submission and live result rendering for one survey. */
 export class SurveyParticipation implements OnInit, OnDestroy {
+  private readonly voteLockStoragePrefix = 'survey-voted:';
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private surveyService = inject(SurveyService);
@@ -35,6 +43,7 @@ export class SurveyParticipation implements OnInit, OnDestroy {
   submitError = '';
   submitSuccess = false;
   isSubmitting = false;
+  hasAlreadyVoted = false;
   voteCountsByAnswerId: Record<string, number> = {};
   voteTotalsByQuestionId: Record<string, number> = {};
   private stopVoteRealtimeListener: (() => void) | null = null;
@@ -59,7 +68,9 @@ export class SurveyParticipation implements OnInit, OnDestroy {
     this.document.body.classList.add('survey-page');
     this.surveyId = this.route.snapshot.paramMap.get('id');
 
-    if (!this.ensureSurveyId()) {
+    const idError = ensureSurveyIdOrError(this.surveyId);
+    if (idError) {
+      this.loadError = idError;
       this.finishInitialLoading();
       return;
     }
@@ -78,18 +89,6 @@ export class SurveyParticipation implements OnInit, OnDestroy {
   }
 
   /**
-   * Ensures a survey id exists and sets an error when missing.
-   * @returns True when survey id is available.
-   */
-  private ensureSurveyId(): boolean {
-    if (this.surveyId) {
-      return true;
-    }
-    this.loadError = 'Keine Umfrage-ID gefunden.';
-    return false;
-  }
-
-  /**
    * Loads survey, validates state and starts live updates.
    * @returns Promise resolved after lifecycle loading finishes.
    */
@@ -100,6 +99,7 @@ export class SurveyParticipation implements OnInit, OnDestroy {
         return;
       }
       await this.loadVoteCounts();
+      this.hasAlreadyVoted = this.hasVoteLock();
       this.startVoteRealtimeUpdates();
     } catch (error: unknown) {
       this.setLoadError(error);
@@ -114,7 +114,6 @@ export class SurveyParticipation implements OnInit, OnDestroy {
     if (!this.surveyId) {
       return null;
     }
-
     return this.surveyService.getSurveyById(this.surveyId);
   }
 
@@ -130,7 +129,7 @@ export class SurveyParticipation implements OnInit, OnDestroy {
     }
 
     this.survey = survey;
-    this.buildForm(survey);
+    buildQuestionSelectionForm(this.fb, this.questionsArray, survey);
     return true;
   }
 
@@ -140,8 +139,7 @@ export class SurveyParticipation implements OnInit, OnDestroy {
    * @returns void
    */
   private setLoadError(error: unknown): void {
-    const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
-    this.loadError = `Umfrage konnte nicht geladen werden: ${message}`;
+    this.loadError = buildUnknownErrorMessage('Umfrage konnte nicht geladen werden: ', error);
   }
 
   /**
@@ -201,18 +199,6 @@ export class SurveyParticipation implements OnInit, OnDestroy {
   }
 
   /**
-   * Creates one required multi-select control per question.
-   * @param survey Current survey model.
-   * @returns void
-   */
-  private buildForm(survey: Surveys): void {
-    this.questionsArray.clear();
-    for (const _question of survey.ask) {
-      this.questionsArray.push(this.fb.control<string[]>([], { nonNullable: true, validators: [Validators.required] }));
-    }
-  }
-
-  /**
    * Returns whether an answer is selected for a question index.
    * @param questionIndex Index of the question.
    * @param answerText Stored answer id or text.
@@ -231,6 +217,10 @@ export class SurveyParticipation implements OnInit, OnDestroy {
    * @returns void
    */
   toggleAnswer(questionIndex: number, answerText: string, checked: boolean): void {
+    if (this.hasAlreadyVoted || this.submitSuccess || this.isSubmitting) {
+      return;
+    }
+
     const control = this.questionsArray.at(questionIndex);
     const current = control.value;
 
@@ -238,6 +228,7 @@ export class SurveyParticipation implements OnInit, OnDestroy {
       control.setValue([...current, answerText]);
       return;
     }
+
     control.setValue(current.filter((answer) => answer !== answerText));
   }
 
@@ -258,6 +249,7 @@ export class SurveyParticipation implements OnInit, OnDestroy {
     if (!this.canSubmit()) {
       return;
     }
+
     this.beginSubmit();
 
     try {
@@ -276,6 +268,11 @@ export class SurveyParticipation implements OnInit, OnDestroy {
    */
   private canSubmit(): boolean {
     if (this.submitSuccess || this.isSubmitting) return false;
+
+    if (this.hasAlreadyVoted) {
+      this.submitError = 'Du hast fuer diese Umfrage bereits abgestimmt.';
+      return false;
+    }
 
     if (this.surveyForm.invalid) {
       this.surveyForm.markAllAsTouched();
@@ -304,6 +301,8 @@ export class SurveyParticipation implements OnInit, OnDestroy {
   private async persistVote(): Promise<void> {
     const payload = this.buildSubmissionPayload();
     await this.surveyService.submitSurveyVote(this.surveyId!, payload);
+    this.storeVoteLock();
+    this.hasAlreadyVoted = true;
     await this.loadVoteCounts();
   }
 
@@ -324,8 +323,7 @@ export class SurveyParticipation implements OnInit, OnDestroy {
    * @returns void
    */
   private setSubmitError(error: unknown): void {
-    const message = error instanceof Error ? error.message : 'Unbekannter Fehler';
-    this.submitError = `Abstimmung konnte nicht gespeichert werden: ${message}`;
+    this.submitError = buildUnknownErrorMessage('Abstimmung konnte nicht gespeichert werden: ', error);
   }
 
   /**
@@ -372,9 +370,26 @@ export class SurveyParticipation implements OnInit, OnDestroy {
    * @returns Rounded percentage value.
    */
   resultPercent(questionId: string | undefined, answerId: string | undefined): number {
+    if (!questionId || !answerId) {
+      return 0;
+    }
+
+    let answerVotes = this.voteCountsByAnswerId[answerId] ?? 0;
+    let questionVotes = this.voteTotalsByQuestionId[questionId] ?? 0;
+
+    if (!this.hasAlreadyVoted && !this.submitSuccess) {
+      const draftSelection = getDraftSelectionForQuestion(this.survey, questionId, this.questionsArray);
+      if (draftSelection.length > 0) {
+        questionVotes += draftSelection.length;
+        if (draftSelection.includes(answerId)) {
+          answerVotes += 1;
+        }
+      }
+    }
+
     return calcResultPercent(questionId, answerId, {
-      byAnswerId: this.voteCountsByAnswerId,
-      byQuestionId: this.voteTotalsByQuestionId,
+      byAnswerId: { [answerId]: answerVotes },
+      byQuestionId: { [questionId]: questionVotes },
     });
   }
 
@@ -385,5 +400,21 @@ export class SurveyParticipation implements OnInit, OnDestroy {
    */
   resultVotes(answerId: string | undefined): number {
     return this.voteCountsByAnswerId[answerId ?? ''] ?? 0;
+  }
+
+  /**
+   * Checks whether a local vote lock already exists for this survey.
+   * @returns True when user already voted from this browser.
+   */
+  private hasVoteLock(): boolean {
+    return hasVoteLockForSurvey(this.document, voteLockKeyForSurvey(this.voteLockStoragePrefix, this.surveyId));
+  }
+
+  /**
+   * Persists a local vote lock after successful submission.
+   * @returns void
+   */
+  private storeVoteLock(): void {
+    storeVoteLockForSurvey(this.document, voteLockKeyForSurvey(this.voteLockStoragePrefix, this.surveyId));
   }
 }

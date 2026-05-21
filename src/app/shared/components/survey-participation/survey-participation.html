@@ -27,7 +27,7 @@
               <label class="answer-row" *ngFor="let answer of question.answers; let ai = index">
                 <input
                   type="checkbox"
-                  [disabled]="isSubmitting || submitSuccess"
+                  [disabled]="isSubmitting || submitSuccess || hasAlreadyVoted"
                   [checked]="isAnswerChecked(qi, answer.id ?? answer.text)"
                   (change)="toggleAnswer(qi, answer.id ?? answer.text, $any($event.target).checked)"
                 />
@@ -40,12 +40,13 @@
         </div>
 
         <div class="submit-row">
-          <button class="--primary-btn" type="submit" [disabled]="surveyForm.invalid || isSubmitting || submitSuccess || !survey">
+          <button class="--primary-btn" type="submit" [disabled]="surveyForm.invalid || isSubmitting || submitSuccess || hasAlreadyVoted || !survey">
             Complete survey
           </button>
         </div>
 
         <p class="status-message status-message--error" *ngIf="submitError">{{ submitError }}</p>
+        <p class="status-message" *ngIf="hasAlreadyVoted && !submitSuccess">Du hast hier bereits abgestimmt.</p>
         <p class="success-message" *ngIf="submitSuccess">Danke! Deine Antworten wurden erfasst.</p>
       </form>
     </section>

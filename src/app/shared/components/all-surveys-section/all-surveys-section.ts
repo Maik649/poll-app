@@ -1,4 +1,5 @@
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Surveys } from '../surveys';
@@ -16,6 +17,7 @@ type SurveyStatusFilter = 'all' | 'active' | 'past';
 /** Displays the full survey list with status and category filtering. */
 export class AllSurveysSection implements OnInit {
   private surveyService = inject(SurveyService);
+  private destroyRef = inject(DestroyRef);
   private cdr = inject(ChangeDetectorRef);
 
   surveys: Surveys[] = [];
@@ -31,6 +33,11 @@ export class AllSurveysSection implements OnInit {
    */
   ngOnInit(): void {
     void this.loadSurveys();
+    this.surveyService.surveysChanged$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        void this.loadSurveys();
+      });
   }
 
   /**
@@ -38,6 +45,8 @@ export class AllSurveysSection implements OnInit {
    * @returns Promise resolved after load cycle.
    */
   private async loadSurveys(): Promise<void> {
+    this.isLoading = true;
+    this.loadError = '';
     try {
       this.surveys = await this.surveyService.getSurveys();
     } catch (error: unknown) {
@@ -46,7 +55,7 @@ export class AllSurveysSection implements OnInit {
       console.error('Fehler beim Laden der Umfragen:', error);
     } finally {
       this.isLoading = false;
-      this.cdr.detectChanges();
+      this.cdr.markForCheck();
     }
   }
 

@@ -1,16 +1,15 @@
 <div class="form-wrapper">
   <div class="submit-dialog-backdrop" *ngIf="isSubmitDialogOpen" (click)="confirmSubmitDialog()">
     <section
-      class="submit-dialog"
-      [class.submit-dialog--error]="submitDialogType === 'error'"
+    class="submit-dialog"
+    [class.submit-dialog--error]="submitDialogType === 'error'"
       role="dialog"
       aria-modal="true"
       [attr.aria-label]="submitDialogTitle"
       (click)="$event.stopPropagation()"
-    >
-      <h2>{{ submitDialogTitle }}</h2>
+      >
+      <p><button class="submit-dialog-btn" type="button" (click)="confirmSubmitDialog()">X</button></p>
       <p>{{ submitDialogMessage }}</p>
-      <button class="publish-btn" type="button" (click)="confirmSubmitDialog()">OK</button>
     </section>
   </div>
 
@@ -96,7 +95,7 @@
               id="description"
               formControlName="description"
               rows="5"
-              placeholder="Kurz beschreiben, worum es in deiner Umfrage geht..."
+              placeholder="A brief description of what your survey is about..."
             ></textarea>
             <button
               class="clear-btn"
@@ -185,6 +184,15 @@
                     <img src="assets/icon/Delete.svg" alt="">
                   </button>
                 </div>
+                <button
+                  class="answer-remove-btn"
+                  type="button"
+                  (click)="removeAnswer(qi, ai)"
+                  [disabled]="answersArray(qi).length === 1 || isSaving"
+                  [attr.aria-label]="'Antwort ' + answerLabel(ai) + ' entfernen'"
+                >
+                  X
+                </button>
               </div>
 
               <button class="text-link-btn" type="button" (click)="addAnswer(qi)" [disabled]="isSaving">

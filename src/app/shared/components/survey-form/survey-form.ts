@@ -1,4 +1,4 @@
-import { Component, inject, input, output } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -35,12 +35,13 @@ export class SurveyForm {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private surveyService = inject(SurveyService);
+  private cdr = inject(ChangeDetectorRef);
 
-  readonly maxQuestions = 2;
+  readonly maxQuestions = 4;
 
   isDialogMode = input(false);
-  closed = output<void>();
-  saved = output<void>();
+  @Output() closed = new EventEmitter<void>();
+  @Output() saved = new EventEmitter<void>();
 
   categories = ['Team Activities', 'Health & Wellness', 'Gaming & Entertainment', 'Education & Learning', 'Lifestyle & Preferences', 'Technology & Innovation'];
   minEndDate = this.currentDate();
@@ -279,6 +280,7 @@ export class SurveyForm {
       this.openSubmitDialog('error', 'Erstellung fehlgeschlagen', message);
     } finally {
       this.isSaving = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -294,6 +296,7 @@ export class SurveyForm {
     this.submitDialogTitle = title;
     this.submitDialogMessage = message;
     this.isSubmitDialogOpen = true;
+    this.cdr.markForCheck();
   }
 
   /**

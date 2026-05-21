@@ -3,8 +3,9 @@
 
 .survey-card-content {
   display: flex;
-  gap: 10px;
-  
+  justify-content: space-between;
+  padding-bottom: 25px;
+  gap: 25px;
 }
 
 .status-message {
@@ -19,12 +20,12 @@
 
 .survey-card {
   display: flex;
-  width: 100%;
+  width: 350px;
   background: rgb(250, 245, 254);
   border-radius: 0 80px 0 0;
-  padding: 40px 0px;
+  padding: 50px 30px;
   margin-bottom: 12px;
-  gap: 50px;
+  gap: 60px;
   height: auto;
   text-decoration: none;
   cursor: pointer;
@@ -38,8 +39,6 @@
     }
     background: rgb(244, 233, 251);
   }
-
-
 }
 
 .survey-card__header {
@@ -52,7 +51,9 @@
 
   p {
     font-family: $fontFamily_Mulish;
+    font-weight: 600;
     font-size: 14px;
+    font-style: bold;
   }
 }
 
@@ -61,7 +62,6 @@
   font-family: $fontFamily_Mulish;
   font-size: 26px;
   font-weight: 700;
-  font-style: bold;
   color: $fonts-color-primary;
 }
 
@@ -71,6 +71,9 @@
   gap: 4px;
   font-size: 13px;
   color: $fonts-color-primary;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: $fontFamily_Mulish;
 }
 
 .end-date {
@@ -82,18 +85,18 @@
 
 @include respond-to('small') {
  .survey-card-content {
-   overflow-X: scroll;
    display: block;
    flex-direction: row;
    width: 100%;
-   @include scrollbars(10px);
+   
   }
   
   .survey-card {
     display: flex;
     background: rgb(250, 245, 254);
     border-radius: 0 80px 0 0;
-    padding: 40px 0px;
+    padding: 40px 20px;
+    width: 85%;
     margin-bottom: 12px;
     gap: 50px;
     height: auto;

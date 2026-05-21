@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { RealtimeChannel, createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { Surveys } from '../components/surveys';
@@ -25,7 +26,7 @@ interface DbSurvey {
   ask_name: string;
   start_date: string;
   end_date: string;
-  category: string;
+  category?: string | null;
 }
 
 /** Represents one persisted survey vote row. */
@@ -52,6 +53,7 @@ export interface SurveyVoteCounts {
 })
 /** Encapsulates survey persistence and live vote aggregation through Supabase. */
 export class SurveyService {
+  private surveysChangedSubject = new Subject<void>();
   private supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
     auth: {
       persistSession: false,
@@ -59,6 +61,9 @@ export class SurveyService {
       detectSessionInUrl: false,
     },
   });
+
+  /** Emits whenever surveys should be reloaded in list views. */
+  readonly surveysChanged$ = this.surveysChangedSubject.asObservable();
 
   constructor() {
     this.validateConfig();
@@ -114,20 +119,60 @@ export class SurveyService {
    * @returns Promise resolved when all inserts succeed.
    */
   async createSurvey(survey: Surveys): Promise<void> {
-    const { data: insertedSurvey, error: surveyError } = await this.supabase
-      .from('surveys')
-      .insert({
-        ask_name: survey.askName,
-        start_date: survey.startDate,
-        end_date: survey.endDate,
-        category: survey.category,
-        created_by: null,
-      })
-      .select('id')
-      .single();
+    await this.createSurveyLegacy(survey);
 
-    if (surveyError || !insertedSurvey) {
-      throw surveyError ?? new Error('Your survey is now published');
+    setTimeout(() => {
+      this.surveysChangedSubject.next();
+    }, 0);
+  }
+
+  /**
+   * Creates one survey using the legacy 3-step insert flow.
+   * @param survey Survey payload to persist.
+   * @returns Promise resolved when all inserts succeed.
+   */
+  private async createSurveyLegacy(survey: Surveys): Promise<void> {
+    const surveyInsertPayload = {
+      ask_name: survey.askName,
+      start_date: survey.startDate,
+      end_date: survey.endDate,
+      category: survey.category,
+    };
+
+    let insertedSurvey: { id: string } | null = null;
+
+    const withCategoryInsert = await this.withTimeout(
+      this.supabase
+        .from('surveys')
+        .insert(surveyInsertPayload)
+        .select('id')
+        .single(),
+      'Speichern der Umfrage'
+    );
+
+    if (!withCategoryInsert.error && withCategoryInsert.data) {
+      insertedSurvey = withCategoryInsert.data as { id: string };
+    } else if (this.isMissingColumn(withCategoryInsert.error, 'category')) {
+      const { data: insertedWithoutCategory, error: surveyInsertError } = await this.withTimeout(
+        this.supabase
+          .from('surveys')
+          .insert({
+            ask_name: survey.askName,
+            start_date: survey.startDate,
+            end_date: survey.endDate,
+          })
+          .select('id')
+          .single(),
+        'Speichern der Umfrage'
+      );
+
+      if (surveyInsertError || !insertedWithoutCategory) {
+        throw surveyInsertError ?? new Error('Umfrage konnte nicht gespeichert werden.');
+      }
+
+      insertedSurvey = insertedWithoutCategory as { id: string };
+    } else {
+      throw withCategoryInsert.error ?? new Error('Umfrage konnte nicht gespeichert werden.');
     }
 
     const questionsPayload = survey.ask.map((question, position) => ({
@@ -136,8 +181,13 @@ export class SurveyService {
       position,
     }));
 
-    const { data: insertedQuestions, error: questionsError } = await this.supabase
-      .from('survey_questions').insert(questionsPayload).select('id, position');
+    const { data: insertedQuestions, error: questionsError } = await this.withTimeout(
+      this.supabase
+        .from('survey_questions')
+        .insert(questionsPayload)
+        .select('id, position'),
+      'Speichern der Fragen'
+    );
 
     if (questionsError || !insertedQuestions) {
       throw questionsError ?? new Error('Fragen konnten nicht gespeichert werden.');
@@ -152,8 +202,12 @@ export class SurveyService {
       }));
     });
 
-    const { error: answersError } = await this.supabase
-      .from('survey_answers').insert(answersPayload);
+    const { error: answersError } = await this.withTimeout(
+      this.supabase
+        .from('survey_answers')
+        .insert(answersPayload),
+      'Speichern der Antworten'
+    );
 
     if (answersError) {
       throw answersError;
@@ -161,22 +215,71 @@ export class SurveyService {
   }
 
   /**
+   * Returns whether a specific column is missing in the target table.
+   * @param error Unknown database error value.
+   * @param columnName Column name to check.
+   * @returns True when the database reports a missing column.
+   */
+  private isMissingColumn(error: unknown, columnName: string): boolean {
+    if (!error || typeof error !== 'object') {
+      return false;
+    }
+
+    const maybeCode = 'code' in error ? error.code : undefined;
+    const maybeMessage = 'message' in error ? error.message : undefined;
+    const code = typeof maybeCode === 'string' ? maybeCode : '';
+    const message = typeof maybeMessage === 'string' ? maybeMessage.toLowerCase() : '';
+
+    return code === '42703' && message.includes(columnName.toLowerCase());
+  }
+
+  /**
+   * Converts unknown category values to a safe string used in the app model.
+   * @param value Raw category value from database.
+   * @returns Category string or empty string.
+   */
+  private normalizeCategory(value: unknown): string {
+    return typeof value === 'string' ? value : '';
+  }
+
+  /**
    * Loads all surveys with nested questions and answer options.
    * @returns Surveys with expanded questions and answers.
    */
   async getSurveys(): Promise<Surveys[]> {
-    const { data: surveysData, error: surveysError } = await this.withTimeout(
+    let surveys: DbSurvey[] = [];
+
+    const withCategorySelect = await this.withTimeout(
       this.supabase
         .from('surveys')
         .select('id,ask_name,start_date,end_date,category')
         .order('id', { ascending: false }),
-      'Laden der Umfragen');
+      'Laden der Umfragen'
+    );
 
-    if (surveysError) {
-      throw surveysError;
+    if (!withCategorySelect.error) {
+      surveys = (withCategorySelect.data ?? []) as DbSurvey[];
+    } else if (this.isMissingColumn(withCategorySelect.error, 'category')) {
+      const { data: surveysWithoutCategory, error: surveysError } = await this.withTimeout(
+        this.supabase
+          .from('surveys')
+          .select('id,ask_name,start_date,end_date')
+          .order('id', { ascending: false }),
+        'Laden der Umfragen'
+      );
+
+      if (surveysError) {
+        throw surveysError;
+      }
+
+      surveys = ((surveysWithoutCategory ?? []) as DbSurvey[]).map((survey) => ({
+        ...survey,
+        category: '',
+      }));
+    } else {
+      throw withCategorySelect.error;
     }
 
-    const surveys = (surveysData ?? []) as DbSurvey[];
     if (surveys.length === 0) {
       return [];
     }
@@ -238,7 +341,7 @@ export class SurveyService {
         askName: survey.ask_name,
         startDate: survey.start_date,
         endDate: survey.end_date,
-        category: survey.category,
+        category: this.normalizeCategory(survey.category),
         ask: sortedQuestions.map((question) => ({
           id: question.id,
           questionText: question.question_text,
@@ -256,22 +359,44 @@ export class SurveyService {
      */
 
   async getSurveyById(surveyId: string): Promise<Surveys | null> {
-    const { data: surveyData, error: surveyError } = await this.withTimeout(
+    let surveyData: DbSurvey | null = null;
+
+    const withCategorySelect = await this.withTimeout(
       this.supabase
         .from('surveys')
         .select('id,ask_name,start_date,end_date,category')
         .eq('id', surveyId)
         .maybeSingle(),
-      'Laden der Umfrage');
+      'Laden der Umfrage'
+    );
 
-    if (surveyError) {
-      throw surveyError;
+    if (!withCategorySelect.error) {
+      surveyData = (withCategorySelect.data as DbSurvey | null) ?? null;
+    } else if (this.isMissingColumn(withCategorySelect.error, 'category')) {
+      const { data: surveyWithoutCategory, error: surveyError } = await this.withTimeout(
+        this.supabase
+          .from('surveys')
+          .select('id,ask_name,start_date,end_date')
+          .eq('id', surveyId)
+          .maybeSingle(),
+        'Laden der Umfrage'
+      );
+
+      if (surveyError) {
+        throw surveyError;
+      }
+
+      surveyData = surveyWithoutCategory
+        ? ({ ...(surveyWithoutCategory as DbSurvey), category: '' })
+        : null;
+    } else {
+      throw withCategorySelect.error;
     }
 
     if (!surveyData) {
       return null;
     }
-    const survey = surveyData as DbSurvey;
+    const survey = surveyData;
 
     const { data: questionsData, error: questionsError } = await this.withTimeout(
       this.supabase
@@ -317,7 +442,7 @@ export class SurveyService {
       askName: survey.ask_name,
       startDate: survey.start_date,
       endDate: survey.end_date,
-      category: survey.category,
+      category: this.normalizeCategory(survey.category),
       ask: questions.map((question) => ({
         id: question.id,
         questionText: question.question_text,

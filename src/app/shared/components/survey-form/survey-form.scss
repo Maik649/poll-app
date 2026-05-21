@@ -7,6 +7,7 @@
 
 .submit-dialog-backdrop {
   position: fixed;
+  inset: 0;
   z-index: 50;
   display: grid;
   place-items: center;
@@ -18,24 +19,35 @@
 .submit-dialog {
   width: min(460px, 100%);
   padding: 24px;
-  border-radius: 18px;
-  background: #4c3954;
-  color: #fff;
-  border: 1px solid rgba(255, 171, 76, 0.45);
+  border-radius: 5px 50px 5px 5px;
+  background: $secendary-orange;
+  color: $primary-bg;
+  font-family: $fontFamily_Nerko;
+  font-size: clamp(20px, 3vw, 62px);
   box-shadow: 0 24px 44px rgba(12, 8, 18, 0.45);
 
-  h2 {
-    margin: 0 0 10px;
-    color: #ffab4c;
-    font-size: 26px;
-    line-height: 1.15;
-  }
-
   p {
-    margin: 0 0 20px;
-    color: #efe9f3;
+    margin: 0 0 0px;
+    color: $primary-bg;
   }
 }
+
+.submit-dialog-btn {
+  display: flex;
+  position: relative;
+  padding: 0 10px;
+  background-color: $secendary-orange;
+  border: 0;
+  border-radius: 8px;
+  font-family: $fontFamily_Nokora-Bold;
+  font-weight: 700;
+  font-style: bold;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.4s;
+  float: right;
+}
+
 
 .submit-dialog--error {
   border-color: rgba(239, 122, 122, 0.7);
@@ -91,9 +103,8 @@
 
 .meta-grid {
   display: grid;
-  grid-template-columns: 1.55fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 18px;
-  margin-bottom: 28px;
 }
 
 .meta-column--left {
@@ -117,7 +128,14 @@
   label {
     font-size: 16px;
     font-weight: 700;
+    font-family: $fontFamily_Mulish;
     color: #fff;
+  }
+
+  ::placeholder{
+    font-size: 16px;
+    font-weight: 500;
+    font-family: $fontFamily_Mulish;
   }
 
   select {
@@ -230,6 +248,8 @@
     border-radius: 6px;
     color: transparent;
     font-size: 0px;
+    font-weight: 700;
+    font-family: $fontFamily_Mulish;
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
@@ -262,6 +282,9 @@
     color: #ffab4c;
     text-align: center;
     line-height: 1.1;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: $fontFamily_Mulish;
   }
 }
 
@@ -291,7 +314,7 @@
   min-height: 16px;
   visibility: hidden;
   color: #ffc5c5;
-  font-size: 13px;
+  font-size: 14px;
 
 }
 
@@ -302,17 +325,13 @@
 
 .submit-error {
   min-height: 18px;
-  visibility: hidden;
+  visibility: visible;
   margin-bottom: 18px;
   padding: 12px 14px;
   border: 1px solid #e17b7b;
   border-radius: 12px;
   background: rgba(242, 132, 132, 0.12);
   color: #ffd1d1;
-}
-
-.submit-error--visible {
-  visibility: visible;
 }
 
 .questions-layout {
@@ -326,10 +345,13 @@
 .questions-list {
   display: grid;
   width: 100%;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1 1.55fr;
   grid-auto-flow: column;
   gap: 50px;
-  grid-auto-columns: max(450px);
+  grid-auto-columns: max(500px);
+  overflow-x: scroll;
+  padding-bottom: 25px; 
+  @include scrollbars(8px);
 }
 
 .question-card {
@@ -356,8 +378,10 @@
 .question-number,
 .answers-title,
 .answer-prefix {
-  font-weight: 700;
   color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: $fontFamily_Mulish;
 }
 
 .question-options {
@@ -369,12 +393,17 @@
   align-items: center;
   gap: 8px;
   color: #ddd4e2;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: $fontFamily_Mulish;
 }
 
 .answer-row {
   gap: 10px;
   margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: $fontFamily_Mulish;
 
   >.input-with-icon {
     flex: 1;
@@ -384,11 +413,35 @@
     border-radius: 5px 20px 5px 5px;
     padding: 12px 14px;
     width: 100%;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: $fontFamily_Mulish;
+  }
+
+  ::placeholder{
+    font-size: 13px;
+    font-weight: 500;
+    font-family: $fontFamily_Mulish;
   }
 }
 
 .answer-prefix {
   min-width: 24px;
+}
+
+.answer-remove-btn {
+  border: 0;
+  background: transparent;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 8px;
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 }
 
 .question-sidebar {
@@ -461,6 +514,10 @@
       border-radius: 5px 20px 5px 5px;
       padding: 16px 14px;
       width: 100%;
+    }
+
+    .answer-remove-btn {
+      margin-left: 30px;
     }
   }
 
@@ -555,6 +612,10 @@
       border-radius: 5px 20px 5px 5px;
       padding: 16px 14px;
       width: 100%;
+    }
+
+    .answer-remove-btn {
+      margin-left: 30px;
     }
   }
 
