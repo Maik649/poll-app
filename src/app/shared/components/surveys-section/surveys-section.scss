@@ -5,13 +5,13 @@ h1{
     text-align: center;
     width: 100%;
     margin: 10px 0 0px 0;
-
-    @include respond-to('small') {
-        text-align: left;
-    }
-    
 }
-
+@include respond-to('small') {
+    h1{
+        text-align: left;
+        padding: 16px;
+    }
+}
 .subheadline{
     font-size: 32px;
     font-weight: 500;
@@ -25,6 +25,7 @@ h1{
 .--colomn-container{
     display: flex;
     flex-direction: column;
+    padding: 16px;
 }
 
 app-surveys-card{
@@ -32,11 +33,11 @@ app-surveys-card{
     flex-direction: column;
     gap: 20px;
     width: 90%;
-
-    @include respond-to('small') {
+    
+    @include respond-to('smaller') {
         flex-direction: column;
-        gap: 12px;
-        padding: 16px 0;
+        gap: 16px;
+        width: 100%;
   }
 }
 

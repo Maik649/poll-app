@@ -41,12 +41,15 @@ $fonts-color-primary: rgba(53, 39, 58, 1);
   }
 }
 
+.padding-content{
+    padding: 16px;
+}
+
 .content-wrapper{
     display: flex;
     margin: 0 auto;
     align-items: center;
     max-width: $content-limit;
-    padding: 0 15px;
     
     @include respond-to('small') {
         flex-direction: column;

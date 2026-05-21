@@ -216,6 +216,8 @@ h1 {
 
 .status-message--error {
   color: #faadad;
+  font-family: $fontFamily_Mulish;
+  font-weight: 700;
 }
 
 @include respond-to('small') {
