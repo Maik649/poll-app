@@ -84,7 +84,7 @@
 }
 
 .editor-card {
-  padding: 32px;
+  padding: 16px;
   border-radius: 34px 34px 14px 14px;
   background: #4c3954;
 }
@@ -136,7 +136,7 @@
   }
 
   .--question-input {
-    width: calc(100% - 80px);
+    width: calc(100% - 0px);
   }
 
   input,
@@ -270,7 +270,16 @@
   grid-template-columns: minmax(0, 1fr) 30px;
   align-items: center;
   column-gap: 35px;
+  &.--question-text-input {
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: flex-end;
+      width:  100%;
+      height: 56px;
+      margin-left: 15px;
+  }
 }
+
 
 .form-group--tight {
   gap: 6px;
@@ -307,16 +316,20 @@
 }
 
 .questions-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 28px;
-  align-items: start;
-}
+   display: flex;
+   width: 100%;
+   justify-content: flex-end;
+   align-items: flex-end;
+   flex-direction: column-reverse;
+ }
 
 .questions-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-flow: column;
+  gap: 50px;
+  grid-auto-columns: max(450px);
 }
 
 .question-card {
@@ -381,7 +394,6 @@
 .question-sidebar {
   display: flex;
   justify-content: center;
-  padding-top: 30px;
 }
 
 .form-actions {
@@ -393,7 +405,7 @@
 @include respond-to('small') {
   .create-survey-dialog {
     width: calc(100vw - 0px);
-    max-height: calc(100vh - 10px);
+    max-height: calc(100% - 20px);
   }
 
   .form-wrapper {
@@ -414,6 +426,14 @@
     grid-template-columns: 1fr;
   }
 
+  .form-group--tight {
+    gap: 3px;
+
+    .--question-input {
+      width: calc(100% - 10px);
+    }
+  }
+
   .creator-head {
     flex-direction: column;
   }
@@ -423,4 +443,148 @@
     padding-top: 0;
   }
 
+  .answer-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0px;
+    margin-bottom: 10px;
+
+    >.input-with-icon {
+      display: flex;
+      align-items: flex-end;
+      width: 90%;
+      margin-left: 30px;
+      flex-direction: column-reverse;
+    }
+
+    input {
+      border-radius: 5px 20px 5px 5px;
+      padding: 16px 14px;
+      width: 100%;
+    }
+  }
+
+  .input-with-icon {
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    margin-left: 8px;
+    flex-direction: column-reverse;
+  }
+
+  .clear-btn {
+    margin-top: -28px;
+  }
+
+  .answer-prefix {
+    min-width: 25px;
+  }
+}
+
+@include respond-to('medium') {
+  .create-survey-dialog {
+    width: calc(100vw - 10px);
+    max-height: calc(100vh - 150px);
+  }
+
+  .form-wrapper {
+    padding: 3px;
+  }
+
+  .form-group--category {
+    gap: 0;
+    display: none;
+  }
+
+  .creator-shell {
+    padding: 28px 10px 26px;
+  }
+
+  .editor-card {
+    padding: 22px;
+  }
+
+  .meta-grid,
+  .questions-layout,
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+.questions-list {
+  display: grid;
+  width: 100%;
+  grid-auto-flow: row;
+  gap: 20px;
+  grid-auto-columns: 1fr 1fr;
+  grid-template-columns: repeat(1, 1fr);
+}
+
+  .form-group--tight {
+    gap: 3px;
+
+    .--question-input {
+      width: calc(100% - 10px);
+    }
+  }
+
+  .creator-head {
+    flex-direction: row;
+    width: 95%;
+    margin: 15px;
+  }
+
+  .question-sidebar {
+    justify-content: center;
+    padding-top: 0;
+  }
+
+  .answer-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0px;
+    margin-bottom: 25px;
+
+    >.input-with-icon {
+      display: flex;
+      align-items: flex-end;
+      width: calc(100% - 40px);
+      margin-left: 30px;
+      flex-direction: column-reverse;
+    }
+
+    input {
+      border-radius: 5px 20px 5px 5px;
+      padding: 16px 14px;
+      width: 100%;
+    }
+  }
+
+  .input-with-icon{
+    display: flex;
+    align-items: flex-end;
+    width: 100%;
+    margin-left: 8px;
+    flex-direction: column-reverse;
+  }
+
+  .clear-btn {
+    margin-top: -33px;
+    margin-bottom: 7px;
+  }
+
+  .answer-prefix {
+    min-width: 25px;
+  }
+
+  .question-options {
+    margin: 11px 0 25px;
+  }
+
+  .question-header {
+    margin-bottom: 30px;
+  }
+
+  .input-with-icon--textarea .clear-btn {
+    align-self: flex-end;
+    margin-top: -33px;
+  }
 }

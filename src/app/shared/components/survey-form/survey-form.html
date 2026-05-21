@@ -132,7 +132,7 @@
             </div>
 
             <div class="form-group form-group--tight">
-              <div class="input-with-icon">
+              <div class="input-with-icon --question-text-input">
                 <input
                   type="text"
                   formControlName="questionText"
@@ -185,14 +185,6 @@
                     <img src="assets/icon/Delete.svg" alt="">
                   </button>
                 </div>
-                <button
-                  class="icon-btn icon-btn--small"
-                  type="button"
-                  (click)="removeAnswer(qi, ai)"
-                  [disabled]="answersArray(qi).length === 1 || isSaving"
-                >
-                  x
-                </button>
               </div>
 
               <button class="text-link-btn" type="button" (click)="addAnswer(qi)" [disabled]="isSaving">
@@ -203,7 +195,7 @@
         </div>
 
         <div class="question-sidebar">
-          <button class="add-question-btn" type="button" (click)="addQuestion()" [disabled]="isSaving">
+          <button class="add-question-btn" type="button" (click)="addQuestion()" [disabled]="isSaving || !canAddQuestion()">
             Add next question +
           </button>
         </div>

@@ -36,6 +36,8 @@ export class SurveyForm {
   private router = inject(Router);
   private surveyService = inject(SurveyService);
 
+  readonly maxQuestions = 2;
+
   isDialogMode = input(false);
   closed = output<void>();
   saved = output<void>();
@@ -94,7 +96,19 @@ export class SurveyForm {
    * @returns void
    */
   addQuestion(): void {
+    if (this.askArray.length >= this.maxQuestions) {
+      return;
+    }
+
     this.askArray.push(this.createQuestion());
+  }
+
+  /**
+   * Checks whether another question can be added.
+   * @returns True when the maximum number of questions has not been reached.
+   */
+  canAddQuestion(): boolean {
+    return this.askArray.length < this.maxQuestions;
   }
 
   /**

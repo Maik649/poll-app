@@ -47,6 +47,7 @@ $fonts-color-primary: rgba(53, 39, 58, 1);
     align-items: center;
     max-width: $content-limit;
     padding: 0 15px;
+    
     @include respond-to('small') {
         flex-direction: column;
   }

@@ -1,5 +1,7 @@
 @use "../../../../scss/varieable"as *;
 @use "../../../../scss/mixin.scss"as *;
+@use "../../../../scss/buttons.scss"as *;
+
 
 .content-wrapper {
   display: grid;
@@ -143,12 +145,11 @@
 
 
 .create-survey-dialog {
-  width: min(1200px, calc(100vw - 24px));
-  max-height: calc(100vh - 24px);
+  width: 100%;
+  height: 100%;
   padding: 0;
   border: 0;
-  border-radius: 20px;
-  background: transparent;
+  background-color: rgba(22, 13, 27, 0.72);
   overflow: auto;
   position: fixed;
   top: 50%;
@@ -158,9 +159,11 @@
   z-index: 1000;
 }
 
-dialog::backdrop {
-  background: rgba(22, 13, 27, 0.72);
-  backdrop-filter: blur(100%);
+.create-survey-dialog::backdrop {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(22, 13, 27, 0.72);
+
 }
 
 .dialog-close-btn {
@@ -179,9 +182,9 @@ dialog::backdrop {
   cursor: pointer;
 }
 
- .--dialog-close-btn-normel {
-   visibility: hidden;
- }
+.--dialog-close-btn-normel {
+  visibility: hidden;
+}
 
 @include respond-to('medium') {
   .content-wrapper {
@@ -200,9 +203,10 @@ dialog::backdrop {
     flex-direction: column;
     align-items: center;
     gap: 18px;
-	.subheadline{
-		width: 80%;
-	}
+
+    .subheadline {
+      width: 80%;
+    }
   }
 
   .content-left {
@@ -270,32 +274,26 @@ dialog::backdrop {
     width: calc(100vw - 10px);
     max-height: calc(100vh - 10px);
   }
-}
 
-
-
-@include respond-to('medium') {
-  .--dialog-close-btn-normel{
+  .--dialog-close-btn-normel {
     visibility: hidden;
   }
 }
 
 
 @include respond-to('small') {
-  .--dialog-close-btn-normel {
-    visibility: visible;
-  }
-}
-
-@include respond-to('small') {
   .content-wrapper {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto;
     grid-template-areas:
       'title'
       'visual'
       'copy';
     gap: 18px;
     padding-top: 16px;
+  }
+
+  .--dialog-close-btn-normel {
+    visibility: visible;
   }
 
   .content-copy {

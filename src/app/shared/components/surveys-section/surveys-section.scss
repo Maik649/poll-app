@@ -31,7 +31,6 @@ app-surveys-card{
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 0 40px 40px;
     width: 90%;
 
     @include respond-to('small') {
@@ -40,3 +39,4 @@ app-surveys-card{
         padding: 16px 0;
   }
 }
+

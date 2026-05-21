@@ -1,4 +1,5 @@
 @use '../../../../scss/varieable'as *;
+@use '../../../../scss/mixin.scss'as *;
 
 .participation {
   flex-direction: column;
@@ -214,13 +215,14 @@ h1 {
   color: #ffd8d8;
 }
 
-@media (max-width: 900px) {
+@include respond-to('small') {
   h1 {
-    font-size: 44px;
+    font-size: 38px;
   }
 
   .participation {
-    margin: 0 15px;
+    margin-left: 10px;
+    padding: 0;
   }
 
   .participation__layout {
@@ -239,4 +241,5 @@ h1 {
   .question-card h2 {
     font-size: 30px;
   }
+
 }

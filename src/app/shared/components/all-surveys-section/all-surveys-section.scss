@@ -1,5 +1,5 @@
-@use '../../../../scss/varieable' as *;
-@use '../../../../scss/mixin.scss' as *;
+@use '../../../../scss/varieable'as *;
+@use '../../../../scss/mixin.scss'as *;
 
 /** Stellt sicher dass das Custom Element immer die volle Breite des Eltern-Flex-Containers einnimmt. */
 :host {
@@ -8,7 +8,7 @@
 }
 
 .all-surveys {
-  flex-direction: column;  
+  flex-direction: column;
   padding: 0 0 48px;
 }
 
@@ -176,7 +176,17 @@
 
 @include respond-to('small') {
   .all-surveys {
-    padding-bottom: 28px;
+    padding-bottom: 0px;
+  }
+
+  .all-surveys__grid {
+    width: 100%;
+    display: grid;
+    gap: 14px;
+    padding: 0px;
+    overflow: hidden;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    height: 100%;
   }
 
   .all-surveys__toolbar {
@@ -207,12 +217,6 @@
   .category-option,
   .category-selected {
     font-size: 16px;
-  }
-
-  .all-surveys__grid {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 10px 0;
   }
 
   .survey-card {

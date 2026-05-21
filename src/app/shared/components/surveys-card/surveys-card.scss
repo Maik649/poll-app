@@ -4,6 +4,7 @@
 .survey-card-content {
   display: flex;
   gap: 10px;
+  
 }
 
 .status-message {
@@ -21,7 +22,7 @@
   width: 100%;
   background: rgb(250, 245, 254);
   border-radius: 0 80px 0 0;
-  padding: 40px 18px;
+  padding: 40px 0px;
   margin-bottom: 12px;
   gap: 50px;
   height: auto;
@@ -81,13 +82,34 @@
 
 @include respond-to('small') {
  .survey-card-content {
-   flex-direction: column;
- }
-
+   overflow-X: scroll;
+   display: block;
+   flex-direction: row;
+   width: 100%;
+   @include scrollbars(10px);
+  }
+  
   .survey-card {
-    border-radius: 0 46px 0 0;
-    padding: 18px 14px;
-    gap: 18px;
+    display: flex;
+    background: rgb(250, 245, 254);
+    border-radius: 0 80px 0 0;
+    padding: 40px 0px;
+    margin-bottom: 12px;
+    gap: 50px;
+    height: auto;
+    text-decoration: none;
+    cursor: pointer;
+    
+    &:hover {
+      .end-date {
+        border-radius: 0 14px 0 0;
+        padding: 8px;
+        background-color: $primary-orange;
+        color: $fonts-color-primary;
+      }
+      
+      background: rgb(244, 233, 251);
+    }
   }
 
   .survey-card__header {
