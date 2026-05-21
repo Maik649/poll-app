@@ -43,3 +43,4 @@ __screenshots__/
 .DS_Store
 Thumbs.db
 /.githup
+create_survey_with_questions.sql
